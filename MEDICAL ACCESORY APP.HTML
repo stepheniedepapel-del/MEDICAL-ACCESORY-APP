@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediConnect - Healthcare Access Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-30%, -30%) scale(1.2); }
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '⚕️';
+            -webkit-text-fill-color: initial;
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: var(--glass);
+            color: var(--primary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        .card p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Health Monitor Section */
+        .health-monitor {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .sensor-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .sensor-value {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .sensor-value .value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .sensor-value .label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .status-normal { background: var(--success); }
+        .status-warning { background: var(--accent); }
+        .status-danger { background: var(--danger); }
+
+        /* Chat Terminal */
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message-patient {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-doctor {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--glass);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Education Section */
+        .education-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .edu-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .edu-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .edu-card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid var(--glass);
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; }
+            .sensor-display { grid-template-columns: 1fr; }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">MediConnect</div>
+            <ul class="nav-links">
+                <li><a href="#dashboard" class="active">Dashboard</a></li>
+                <li><a href="#consultation">Consultation</a></li>
+                <li><a href="#health-sensor">Health Sensor</a></li>
+                <li><a href="#education">Education</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Healthcare for Everyone</h1>
+            <p>Connect with doctors, monitor your health, and learn about disease prevention - all for free.</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="startConsultation()">
+                    🩺 Start Consultation
+                </button>
+                <button class="btn btn-secondary" onclick="checkHealth()">
+                    ❤️ Check Health
+                </button>
+            </div>
+        </section>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="doctors-count">24</div>
+                <div class="stat-label">Doctors Online</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="patients-count">1.2k</div>
+                <div class="stat-label">Patients Helped</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="diseases-detected">156</div>
+                <div class="stat-label">Early Detections</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Free Access</div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <!-- Doctor Consultation Card -->
+            <div class="card" id="consultation">
+                <div class="card-header">
+                    <div class="card-icon">👨‍⚕️</div>
+                    <div>
+                        <h3>Doctor Consultation</h3>
+                        <small style="color: var(--success)">● 12 doctors online now</small>
+                    </div>
+                </div>
+                <p>Connect with certified doctors for free consultation. Get medical advice, prescriptions, and referrals.</p>
+                <div class="chat-container" style="margin-top: 1rem;">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message message-doctor">
+                            <strong>Dr. Sarah Johnson</strong><br>
+                            Hello! I'm Dr. Sarah. How can I help you today? Please describe your symptoms.
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-input" placeholder="Type your symptoms or questions..." 
+                               onkeypress="if(event.key==='Enter') sendMessage()">
+                        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Sensor Card -->
+            <div class="card health-monitor" id="health-sensor">
+                <div class="card-header">
+                    <div class="card-icon">🩺</div>
+                    <div>
+                        <h3>Health Sensor</h3>
+                        <small style="color: var(--accent)">● Simulated Device</small>
+                    </div>
+                </div>
+                <p>Real-time health monitoring. Detect early signs of hypertension, irregular heartbeat, and more.</p>
+                
+                <div class="sensor-display">
+                    <div class="sensor-value">
+                        <div class="value" id="heart-rate">--</div>
+                        <div class="label">Heart Rate (BPM)</div>
+                        <span class="status-indicator status-normal" id="hr-status"></span>
+                    </div>
+                    <div class="sensor-value">
+                        <div class="value" id="blood-pressure">--/--</div>
+                        <div class="label">Blood Pressure (mmHg)</div>
+                        <span class="status-indicator status-normal" id="bp-status"></span>
+                    </div>
+                    <div class="sensor-value">
+                        <div class="value" id="oxygen-level">--%</div>
+                        <div class="label">Oxygen Saturation</div>
+                        <span class="status-indicator status-normal" id="ox-status"></span>
+                    </div>
+                    <div class="sensor-value">
+                        <div class="value" id="temperature">--°C</div>
+                        <div class="label">Body Temperature</div>
+                        <span class="status-indicator status-normal" id="temp-status"></span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="startMonitoring()">
+                    🔍 Start Health Scan
+                </button>
+                <div id="health-alert" style="margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none;"></div>
+            </div>
+
+            <!-- Disease Detection Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔬</div>
+                    <div>
+                        <h3>AI Symptom Checker</h3>
+                        <small style="color: var(--primary)">● Powered by Medical API</small>
+                    </div>
+                </div>
+                <p>Enter your symptoms and get instant analysis of possible conditions and recommendations.</p>
+                <div style="margin-top: 1rem;">
+                    <input type="text" id="symptom-input" placeholder="Enter symptoms (e.g., headache, fever)..." 
+                           style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass); background: rgba(0,0,0,0.2); color: white; margin-bottom: 0.5rem;">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="checkSymptoms()">Analyze Symptoms</button>
+                </div>
+                <div id="symptom-results" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- Emergency Card -->
+            <div class="card" style="border-color: var(--danger);">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, var(--danger), #f97316);">🚨</div>
+                    <div>
+                        <h3>Emergency</h3>
+                        <small style="color: var(--danger)">● 24/7 Available</small>
+                    </div>
+                </div>
+                <p>If you are experiencing a medical emergency, contact emergency services immediately.</p>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--danger);">911</div>
+                    <div style="color: #94a3b8;">Emergency Services</div>
+                </div>
+                <button class="btn" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, var(--danger), #f97316); color: white;" onclick="callEmergency()">
+                    📞 Call Emergency
+                </button>
+            </div>
+        </div>
+
+        <!-- Education Section -->
+        <section id="education" style="margin-top: 4rem;">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">Health Education Center</h2>
+            <p style="text-align: center; color: #94a3b8; margin-bottom: 2rem;">Learn about disease prevention, balanced diet, and recognizing symptoms early.</p>
+            
+            <div class="education-grid" id="education-grid">
+                <!-- Content loaded dynamically -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Education Modal -->
+    <div class="modal" id="edu-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATABASE & STATE MANAGEMENT ====================
+        
+        // Initialize LocalStorage Database
+        const DB = {
+            get: (key) => {
+                const data = localStorage.getItem(`mediconnect_${key}`);
+                return data ? JSON.parse(data) : null;
+            },
+            set: (key, value) => {
+                localStorage.setItem(`mediconnect_${key}`, JSON.stringify(value));
+            },
+            init: () => {
+                if (!DB.get('consultations')) DB.set('consultations', []);
+                if (!DB.get('health_records')) DB.set('health_records', []);
+                if (!DB.get('user_preferences')) DB.set('user_preferences', { theme: 'dark' });
+            }
+        };
+
+        DB.init();
+
+        // ==================== API INTEGRATION ====================
+        
+        // Simulated API for medical data (in real app, connect to actual medical APIs)
+        const MedicalAPI = {
+            // Using a public health API for disease information
+            async fetchDiseaseInfo(disease) {
+                // Simulating API call with realistic medical data
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            name: disease,
+                            symptoms: ['Fever', 'Fatigue', 'Body aches'],
+                            prevention: ['Vaccination', 'Hand hygiene', 'Mask wearing'],
+                            treatment: ['Rest', 'Hydration', 'Antiviral medications']
+                        });
+                    }, 800);
+                });
+            },
+
+            // Simulated health data generation
+            generateHealthData() {
+                return {
+                    heartRate: Math.floor(Math.random() * (100 - 60) + 60),
+                    systolic: Math.floor(Math.random() * (140 - 110) + 110),
+                    diastolic: Math.floor(Math.random() * (90 - 70) + 70),
+                    oxygen: Math.floor(Math.random() * (100 - 95) + 95),
+                    temperature: (Math.random() * (37.5 - 36.1) + 36.1).toFixed(1)
+                };
+            }
+        };
+
+        // ==================== CHAT SYSTEM ====================
+        
+        const doctors = [
+            { name: "Dr. Sarah Johnson", specialty: "General Medicine", status: "online" },
+            { name: "Dr. Michael Chen", specialty: "Cardiology", status: "online" },
+            { name: "Dr. Emily Rodriguez", specialty: "Pediatrics", status: "busy" },
+            { name: "Dr. James Wilson", specialty: "Dermatology", status: "online" }
+        ];
+
+        let currentDoctor = doctors[0];
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const messagesDiv = document.getElementById('chat-messages');
+            const text = input.value.trim();
+            
+            if (!text) return;
+
+            // Add patient message
+            const patientMsg = document.createElement('div');
+            patientMsg.className = 'message message-patient';
+            patientMsg.innerHTML = `<strong>You</strong><br>${text}`;
+            messagesDiv.appendChild(patientMsg);
+            
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Save to database
+            const consultations = DB.get('consultations');
+            consultations.push({
+                type: 'patient',
+                message: text,
+                timestamp: new Date().toISOString(),
+                doctor: currentDoctor.name
+            });
+            DB.set('consultations', consultations);
+
+            // Simulate doctor response with async/await
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const doctorResponse = generateDoctorResponse(text);
+            const doctorMsg = document.createElement('div');
+            doctorMsg.className = 'message message-doctor';
+            doctorMsg.innerHTML = `<strong>${currentDoctor.name}</strong><br>${doctorResponse}`;
+            messagesDiv.appendChild(doctorMsg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Save doctor response
+            consultations.push({
+                type: 'doctor',
+                message: doctorResponse,
+                timestamp: new Date().toISOString(),
+                doctor: currentDoctor.name
+            });
+            DB.set('consultations', consultations);
+        }
+
+        function generateDoctorResponse(patientText) {
+            const lower = patientText.toLowerCase();
+            if (lower.includes('headache')) return "Headaches can be caused by stress, dehydration, or eye strain. Try resting in a dark room and drinking water. If severe or persistent, please visit a clinic.";
+            if (lower.includes('fever')) return "Fever is often a sign of infection. Rest, stay hydrated, and monitor your temperature. If it exceeds 39°C (102°F) or lasts more than 3 days, seek immediate care.";
+            if (lower.includes('chest') || lower.includes('heart')) return "Chest pain requires careful evaluation. Are you experiencing shortness of breath or pain radiating to your arm? If yes, call emergency services immediately.";
+            if (lower.includes('diet') || lower.includes('food')) return "A balanced diet should include: 50% vegetables/fruits, 25% whole grains, 25% lean proteins. Limit sugar and processed foods. Would you like a meal plan?";
+            return "Thank you for sharing. Based on your symptoms, I recommend monitoring for 24 hours. If symptoms worsen or you develop new ones (shortness of breath, severe pain, confusion), seek emergency care immediately. Would you like me to check your vitals?";
+        }
+
+        // ==================== HEALTH SENSOR ====================
+        
+        let monitoringInterval = null;
+
+        async function startMonitoring() {
+            const btn = document.querySelector('#health-sensor button');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px; display: inline-block; vertical-align: middle;"></div> Scanning...';
+
+            // Simulate sensor reading delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const data = MedicalAPI.generateHealthData();
+            
+            // Update UI
+            document.getElementById('heart-rate').textContent = data.heartRate;
+            document.getElementById('blood-pressure').textContent = `${data.systolic}/${data.diastolic}`;
+            document.getElementById('oxygen-level').textContent = data.oxygen + '%';
+            document.getElementById('temperature').textContent = data.temperature + '°C';
+
+            // Update status indicators
+            updateStatus('hr-status', data.heartRate, 60, 100);
+            updateStatus('bp-status', data.systolic, 90, 140);
+            updateStatus('ox-status', data.oxygen, 95, 100);
+            updateStatus('temp-status', parseFloat(data.temperature), 36.1, 37.5);
+
+            // Save to database
+            const records = DB.get('health_records');
+            records.push({
+                ...data,
+                timestamp: new Date().toISOString(),
+                alert: checkHealthAlerts(data)
+            });
+            DB.set('health_records', records);
+
+            // Check for alerts
+            const alerts = checkHealthAlerts(data);
+            const alertDiv = document.getElementById('health-alert');
+            
+            if (alerts.length > 0) {
+                alertDiv.style.display = 'block';
+                alertDiv.style.background = 'rgba(239, 68, 68, 0.2)';
+                alertDiv.style.border = '1px solid var(--danger)';
+                alertDiv.innerHTML = `
+                    <strong style="color: var(--danger)">⚠️ Health Alert Detected:</strong><br>
+                    ${alerts.map(a => `• ${a}`).join('<br>')}
+                    <br><small>Please consult a doctor immediately.</small>
+                `;
+            } else {
+                alertDiv.style.display = 'block';
+                alertDiv.style.background = 'rgba(16, 185, 129, 0.2)';
+                alertDiv.style.border = '1px solid var(--success)';
+                alertDiv.innerHTML = `<strong style="color: var(--success)">✓ All vitals normal</strong><br>Continue monitoring regularly.`;
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '🔍 Start Health Scan';
+        }
+
+        function updateStatus(id, value, min, max) {
+            const el = document.getElementById(id);
+            el.className = 'status-indicator';
+            if (value < min || value > max) {
+                el.classList.add('status-danger');
+            } else if (value < min + (max-min)*0.1 || value > max - (max-min)*0.1) {
+                el.classList.add('status-warning');
+            } else {
+                el.classList.add('status-normal');
+            }
+        }
+
+        function checkHealthAlerts(data) {
+            const alerts = [];
+            if (data.heartRate > 100 || data.heartRate < 60) alerts.push(`Abnormal heart rate: ${data.heartRate} BPM`);
+            if (data.systolic > 140 || data.diastolic > 90) alerts.push(`High blood pressure: ${data.systolic}/${data.diastolic}`);
+            if (data.oxygen < 95) alerts.push(`Low oxygen: ${data.oxygen}%`);
+            if (parseFloat(data.temperature) > 37.5) alerts.push(`Fever detected: ${data.temperature}°C`);
+            return alerts;
+        }
+
+        // ==================== SYMPTOM CHECKER ====================
+        
+        async function checkSymptoms() {
+            const input = document.getElementById('symptom-input');
+            const resultsDiv = document.getElementById('symptom-results');
+            const symptoms = input.value.trim();
+            
+            if (!symptoms) return;
+
+            resultsDiv.innerHTML = '<div class="spinner" style="margin: 1rem auto;"></div>';
+
+            // Simulate API analysis
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const conditions = analyzeSymptoms(symptoms);
+            
+            resultsDiv.innerHTML = `
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px; margin-top: 1rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Analysis Results:</h4>
+                    ${conditions.map(c => `
+                        <div style="padding: 0.8rem; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 0.5rem;">
+                            <strong style="color: ${c.severity === 'high' ? 'var(--danger)' : c.severity === 'medium' ? 'var(--accent)' : 'var(--success)'}">
+                                ${c.name} (${c.probability}% match)
+                            </strong>
+                            <p style="font-size: 0.9rem; margin-top: 0.3rem; color: #94a3b8;">${c.advice}</p>
+                        </div>
+                    `).join('')}
+                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 1rem;">⚠️ This is not a medical diagnosis. Consult a doctor for proper evaluation.</p>
+                </div>
+            `;
+        }
+
+        function analyzeSymptoms(symptoms) {
+            const lower = symptoms.toLowerCase();
+            const conditions = [];
+            
+            if (lower.includes('headache') || lower.includes('migraine')) {
+                conditions.push({ name: 'Tension Headache', probability: 85, severity: 'low', advice: 'Rest, hydration, and OTC pain relievers. Consult if persistent.' });
+            }
+            if (lower.includes('fever') || lower.includes('hot')) {
+                conditions.push({ name: 'Viral Infection', probability: 78, severity: 'medium', advice: 'Rest, fluids, and fever reducers. Monitor temperature.' });
+            }
+            if (lower.includes('chest') || lower.includes('breath')) {
+                conditions.push({ name: 'Respiratory Issue', probability: 65, severity: 'high', advice: 'Seek immediate medical attention if severe.' });
+            }
+            if (lower.includes('tired') || lower.includes('fatigue')) {
+                conditions.push({ name: 'Anemia / Fatigue', probability: 60, severity: 'medium', advice: 'Check iron levels and vitamin B12. Ensure adequate sleep.' });
+            }
+            if (conditions.length === 0) {
+                conditions.push({ name: 'General Malaise', probability: 40, severity: 'low', advice: 'Monitor symptoms. If they persist beyond 3 days, consult a doctor.' });
+            }
+            
+            return conditions.sort((a, b) => b.probability - a.probability);
+        }
+
+        // ==================== EDUCATION CENTER ====================
+        
+        const educationData = [
+            {
+                id: 1,
+                title: "Balanced Diet Essentials",
+                icon: "🥗",
+                category: "Nutrition",
+                content: `
+                    <h2>🥗 The Importance of a Balanced Diet</h2>
+                    <p>A balanced diet provides the nutrients your body needs to function correctly. Without balanced nutrition, your body is more prone to disease, infection, fatigue, and low performance.</p>
+                    
+                    <h3>Key Components:</h3>
+                    <ul>
+                        <li><strong>Vegetables & Fruits (50%):</strong> Rich in vitamins, minerals, and fiber. Aim for 5 servings daily.</li>
+                        <li><strong>Whole Grains (25%):</strong> Brown rice, oats, quinoa. Provide sustained energy.</li>
+                        <li><strong>Lean Proteins (25%):</strong> Fish, poultry, beans, nuts. Essential for muscle repair.</li>
+                        <li><strong>Healthy Fats:</strong> Avocado, olive oil, nuts. Support brain health.</li>
+                    </ul>
+
+                    <h3>⚠️ Diseases Prevented:</h3>
+                    <ul>
+                        <li>Heart disease</li>
+                        <li>Type 2 diabetes</li>
+                        <li>Obesity</li>
+                        <li>Certain cancers</li>
+                        <li>Osteoporosis</li>
+                    </ul>
+
+                    <h3>💡 Daily Tips:</h3>
+                    <ol>
+                        <li>Drink 8 glasses of water</li>
+                        <li>Limit processed sugars</li>
+                        <li>Eat colorful vegetables</li>
+                        <li>Control portion sizes</li>
+                        <li>Never skip breakfast</li>
+                    </ol>
+                `
+            },
+            {
+                id: 2,
+                title: "Hypertension (High BP)",
+                icon: "🫀",
+                category: "Chronic Disease",
+                content: `
+                    <h2>🫀 Understanding Hypertension</h2>
+                    <p>High blood pressure (hypertension) is when your blood pressure is persistently at 140/90 mmHg or higher. It's often called the "silent killer" because it rarely causes symptoms until serious damage occurs.</p>
+
+                    <h3>Warning Signs:</h3>
+                    <ul>
+                        <li>Severe headaches</li>
+                        <li>Nosebleeds</li>
+                        <li>Fatigue or confusion</li>
+                        <li>Vision problems</li>
+                        <li>Chest pain</li>
+                        <li>Difficulty breathing</li>
+                        <li>Irregular heartbeat</li>
+                    </ul>
+
+                    <h3>Prevention Strategies:</h3>
+                    <ul>
+                        <li>Reduce sodium intake (less than 5g/day)</li>
+                        <li>Maintain healthy weight</li>
+                        <li>Exercise regularly (150 min/week)</li>
+                        <li>Limit alcohol consumption</li>
+                        <li>Quit smoking</li>
+                        <li>Manage stress through meditation</li>
+                    </ul>
+
+                    <h3>🚨 When to Seek Help:</h3>
+                    <p>If your reading is 180/120 or higher, wait 5 minutes and recheck. If still high, call emergency services immediately.</p>
+                `
+            },
+            {
+                id: 3,
+                title: "Disease Outbreaks",
+                icon: "🦠",
+                category: "Prevention",
+                content: `
+                    <h2>🦠 Understanding Disease Outbreaks</h2>
+                    <p>An outbreak is the sudden increase in cases of a disease in a specific area. Early recognition and response are crucial to prevent epidemics.</p>
+
+                    <h3>Recent Outbreak Patterns:</h3>
+                    <ul>
+                        <li><strong>Respiratory:</strong> Influenza, COVID-19, TB</li>
+                        <li><strong>Waterborne:</strong> Cholera, Typhoid</li>
+                        <li><strong>Vector-borne:</strong> Malaria, Dengue, Zika</li>
+                    </ul>
+
+                    <h3>Prevention Measures:</h3>
+                    <ol>
+                        <li><strong>Vaccination:</strong> Keep immunizations up to date</li>
+                        <li><strong>Hygiene:</strong> Wash hands frequently (20+ seconds)</li>
+                        <li><strong>Sanitation:</strong> Safe water and waste disposal</li>
+                        <li><strong>Isolation:</strong> Stay home when sick</li>
+                        <li><strong>Protection:</strong> Use masks during outbreaks</li>
+                    </ol>
+
+                    <h3>Recognizing Early Symptoms:</h3>
+                    <ul>
+                        <li>Unusual fever patterns</li>
+                        <li>Cluster of similar symptoms in community</li>
+                        <li>Sudden gastrointestinal illness</li>
+                        <li>Unexplained rashes</li>
+                    </ul>
+                `
+            },
+            {
+                id: 4,
+                title: "Heart Health",
+                icon: "❤️",
+                category: "Cardiology",
+                content: `
+                    <h2>❤️ Maintaining Heart Health</h2>
+                    <p>Cardiovascular diseases are the leading cause of death globally. Most heart conditions are preventable through lifestyle changes.</p>
+
+                    <h3>Know Your Numbers:</h3>
+                    <ul>
+                        <li>Blood Pressure: < 120/80 mmHg</li>
+                        <li>Heart Rate: 60-100 bpm (resting)</li>
+                        <li>Cholesterol: Total < 200 mg/dL</li>
+                        <li>BMI: 18.5 - 24.9</li>
+                    </ul>
+
+                    <h3>Symptoms of Heart Disease:</h3>
+                    <ul>
+                        <li>Chest discomfort (angina)</li>
+                        <li>Shortness of breath</li>
+                        <li>Cold sweats</li>
+                        <li>Nausea</li>
+                        <li>Lightheadedness</li>
+                        <li>Pain in arms, neck, jaw, or back</li>
+                    </ul>
+
+                    <h3>Heart-Healthy Habits:</h3>
+                    <ol>
+                        <li>30 minutes of moderate exercise daily</li>
+                        <li>Eat omega-3 rich foods (fatty fish, walnuts)</li>
+                        <li>Reduce saturated fats and trans fats</li>
+                        <li>Manage stress levels</li>
+                        <li>Get 7-8 hours of quality sleep</li>
+                        <li>Regular health screenings</li>
+                    </ol>
+                `
+            },
+            {
+                id: 5,
+                title: "Diabetes Awareness",
+                icon: "🩸",
+                category: "Chronic Disease",
+                content: `
+                    <h2>🩸 Diabetes Prevention & Management</h2>
+                    <p>Diabetes is a chronic condition affecting how your body turns food into energy. Type 2 diabetes is largely preventable.</p>
+
+                    <h3>Early Warning Signs:</h3>
+                    <ul>
+                        <li>Frequent urination</li>
+                        <li>Excessive thirst</li>
+                        <li>Unexplained weight loss</li>
+                        <li>Extreme hunger</li>
+                        <li>Blurry vision</li>
+                        <li>Slow-healing sores</li>
+                        <li>Frequent infections</li>
+                    </ul>
+
+                    <h3>Risk Factors:</h3>
+                    <ul>
+                        <li>Overweight/obesity</li>
+                        <li>Family history</li>
+                        <li>Sedentary lifestyle</li>
+                        <li>Age > 45</li>
+                        <li>History of gestational diabetes</li>
+                    </ul>
+
+                    <h3>Prevention (Reduce Risk by 58%):</h3>
+                    <ol>
+                        <li>Lose 5-7% of body weight</li>
+                        <li>150 minutes exercise/week</li>
+                        <li>High-fiber diet (25-30g/day)</li>
+                        <li>Whole grains over refined carbs</li>
+                        <li>Regular blood sugar monitoring</li>
+                    </ol>
+                `
+            },
+            {
+                id: 6,
+                title: "Mental Health",
+                icon: "🧠",
+                category: "Wellness",
+                content: `
+                    <h2>🧠 Mental Health Matters</h2>
+                    <p>Mental health is just as important as physical health. Depression and anxiety are leading causes of disability worldwide.</p>
+
+                    <h3>Warning Signs:</h3>
+                    <ul>
+                        <li>Persistent sadness (>2 weeks)</li>
+                        <li>Loss of interest in activities</li>
+                        <li>Sleep disturbances</li>
+                        <li>Difficulty concentrating</li>
+                        <li>Changes in appetite</li>
+                        <li>Thoughts of self-harm</li>
+                    </ul>
+
+                    <h3>Self-Care Strategies:</h3>
+                    <ol>
+                        <li>Regular physical activity</li>
+                        <li>Mindfulness and meditation</li>
+                        <li>Maintain social connections</li>
+                        <li>Limit alcohol and avoid drugs</li>
+                        <li>Seek professional help when needed</li>
+                        <li>Practice gratitude daily</li>
+                    </ol>
+
+                    <h3>🚨 Emergency:</h3>
+                    <p>If you or someone you know is in crisis, contact emergency services or a suicide prevention hotline immediately. You are not alone.</p>
+                `
+            }
+        ];
+
+        function loadEducation() {
+            const grid = document.getElementById('education-grid');
+            grid.innerHTML = educationData.map(item => `
+                <div class="edu-card" onclick="openEducation(${item.id})">
+                    <h4>${item.icon} ${item.title}</h4>
+                    <span style="display: inline-block; background: var(--primary); color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; margin-bottom: 0.5rem;">${item.category}</span>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Click to learn about prevention, symptoms, and management.</p>
+                </div>
+            `).join('');
+        }
+
+        function openEducation(id) {
+            const item = educationData.find(e => e.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('edu-modal');
+            const body = document.getElementById('modal-body');
+            
+            body.innerHTML = `
+                <div style="color: var(--primary); font-size: 3rem; margin-bottom: 1rem;">${item.icon}</div>
+                ${item.content}
+                <div style="margin-top: 2rem; padding: 1rem; background: rgba(14, 165, 233, 0.1); border-radius: 12px; border-left: 4px solid var(--primary);">
+                    <strong>💡 Remember:</strong> Early detection saves lives. Regular check-ups and healthy habits are your best defense against disease.
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('edu-modal').classList.remove('active');
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        
+        function startConsultation() {
+            document.getElementById('consultation').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('chat-input').focus();
+        }
+
+        function checkHealth() {
+            document.getElementById('health-sensor').scrollIntoView({ behavior: 'smooth' });
+            startMonitoring();
+        }
+
+        function callEmergency() {
+            if (confirm('⚠️ This will simulate calling Emergency Services (911). In a real emergency, this would initiate a call.\n\nDo you want to proceed?')) {
+                alert('📞 Connecting to Emergency Services...\n\nIn a production app, this would trigger an actual phone call or alert emergency contacts.');
+            }
+        }
+
+        // Navigation highlighting
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadEducation();
+            
+            // Animate stats
+            setTimeout(() => {
+                document.getElementById('doctors-count').textContent = '24';
+                document.getElementById('patients-count').textContent = '1.2k';
+            }, 500);
+        });
+
+        // Close modal on outside click
+        document.getElementById('edu-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'edu-modal') closeModal();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
