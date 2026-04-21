@@ -1,0 +1,1375 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediConnect Pro - Healthcare Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-30%, -30%) scale(1.2); }
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: var(--glass);
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #f97316);
+            color: white;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        .card p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Health Monitor */
+        .health-monitor {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .sensor-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .sensor-value {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .sensor-value .value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .sensor-value .label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+            animation: pulse-dot 2s infinite;
+        }
+
+        .status-normal { background: var(--success); }
+        .status-warning { background: var(--accent); }
+        .status-danger { background: var(--danger); }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Chat */
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message-patient {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-doctor {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--glass);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Doctor List */
+        .doctor-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .doctor-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .doctor-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .doctor-avatar {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .doctor-info {
+            flex: 1;
+        }
+
+        .doctor-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .doctor-specialty {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .doctor-status {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+        }
+
+        .status-online { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-busy { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .status-offline { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+
+        /* Outbreak Alert */
+        .outbreak-alert {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .outbreak-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .outbreak-severity {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .severity-high { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .severity-moderate { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .severity-low { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            margin-top: 1rem;
+        }
+
+        /* Appointment Form */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--glass);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Loading */
+        .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; }
+            .sensor-display { grid-template-columns: 1fr; }
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">⚕️ MediConnect Pro</div>
+            <ul class="nav-links">
+                <li><a href="#dashboard" class="active">Dashboard</a></li>
+                <li><a href="#consultation">Consultation</a></li>
+                <li><a href="#health">Health Monitor</a></li>
+                <li><a href="#outbreaks">Outbreaks</a></li>
+                <li><a href="#education">Education</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <h1>Healthcare for Everyone</h1>
+            <p>AI-powered health monitoring, free doctor consultations, and real-time disease outbreak tracking.</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="startConsultation()">
+                    🩺 Start Consultation
+                </button>
+                <button class="btn btn-secondary" onclick="checkHealth()">
+                    ❤️ Check Vitals
+                </button>
+                <button class="btn btn-secondary" onclick="bookAppointment()">
+                    📅 Book Appointment
+                </button>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <div class="stats-bar" id="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="stat-doctors">--</div>
+                <div class="stat-label">Doctors Online</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-patients">--</div>
+                <div class="stat-label">Patients Helped</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-detections">--</div>
+                <div class="stat-label">Early Detections</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-response">--</div>
+                <div class="stat-label">Avg Response</div>
+            </div>
+        </div>
+
+        <!-- Disease Outbreak Alerts -->
+        <div class="outbreak-alert" id="outbreaks">
+            <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                🚨 Active Disease Outbreaks
+                <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">(Live Data)</span>
+            </h3>
+            <div id="outbreak-list">
+                <div class="spinner" style="margin: 1rem auto;"></div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <!-- Doctor Consultation -->
+            <div class="card" id="consultation" style="grid-column: span 2;">
+                <div class="card-header">
+                    <div class="card-icon">👨‍⚕️</div>
+                    <div>
+                        <h3>Doctor Consultation</h3>
+                        <small style="color: var(--success)">● Free 24/7 Access</small>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+                    <!-- Doctor List -->
+                    <div>
+                        <h4 style="margin-bottom: 1rem; color: #94a3b8;">Available Doctors</h4>
+                        <div class="doctor-list" id="doctor-list">
+                            <div class="spinner" style="margin: 1rem auto;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat -->
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message message-doctor">
+                                <strong>System</strong><br>
+                                Select a doctor and describe your symptoms to begin consultation.
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chat-input" placeholder="Type symptoms or questions..." 
+                                   onkeypress="if(event.key==='Enter') sendMessage()">
+                            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Monitor -->
+            <div class="card health-monitor" id="health">
+                <div class="card-header">
+                    <div class="card-icon">🩺</div>
+                    <div>
+                        <h3>Health Sensor</h3>
+                        <small style="color: var(--accent)">● Real-time Monitoring</small>
+                    </div>
+                </div>
+                
+                <div class="sensor-display">
+                    <div class="sensor-value">
+                        <div class="value" id="heart-rate">--</div>
+                        <div class="label">Heart Rate (BPM)</div>
+                        <span class="status-indicator status-normal" id="hr-status"></span>
+                    </div>
+                    <div class="sensor-value">
+                        <div class="value" id="blood-pressure">--/--</div>
+                        <div class="label">Blood Pressure</div>
+                        <span class="status-indicator status-normal" id="bp-status"></span>
+                    </div>
+                    <div class="sensor-value">
+                        <div class="value" id="oxygen-level">--%</div>
+                        <div class="label">Oxygen Saturation</div>
+                        <span class="status-indicator status-normal" id="ox-status"></span>
+                    </div>
+                    <div class="sensor-value">
+                        <div class="value" id="temperature">--°C</div>
+                        <div class="label">Temperature</div>
+                        <span class="status-indicator status-normal" id="temp-status"></span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="startMonitoring()">
+                    🔍 Start Health Scan
+                </button>
+                
+                <div id="health-alert" style="margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none;"></div>
+                
+                <!-- Health History Chart -->
+                <div style="margin-top: 1.5rem;">
+                    <h4 style="color: #94a3b8; margin-bottom: 0.5rem;">Vitals History</h4>
+                    <div class="chart-container">
+                        <canvas id="healthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointment Booking -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📅</div>
+                    <div>
+                        <h3>Book Appointment</h3>
+                        <small style="color: var(--primary)">● Schedule Visit</small>
+                    </div>
+                </div>
+                
+                <form id="appointment-form" onsubmit="submitAppointment(event)">
+                    <div class="form-group">
+                        <label>Select Doctor</label>
+                        <select id="appointment-doctor" required>
+                            <option value="">Choose a doctor...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="appointment-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="appointment-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Symptoms / Notes</label>
+                        <input type="text" id="appointment-notes" placeholder="Brief description...">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        Confirm Booking
+                    </button>
+                </form>
+                
+                <div id="appointment-confirmation" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 8px; color: var(--success);">
+                    ✅ Appointment booked successfully!
+                </div>
+            </div>
+
+            <!-- Symptom Checker -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔬</div>
+                    <div>
+                        <h3>AI Symptom Checker</h3>
+                        <small style="color: var(--primary)">● Instant Analysis</small>
+                    </div>
+                </div>
+                
+                <input type="text" id="symptom-input" placeholder="Enter symptoms (e.g., headache, fever)..." 
+                       style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass); background: rgba(0,0,0,0.2); color: white; margin-bottom: 0.5rem;">
+                <button class="btn btn-primary" style="width: 100%;" onclick="checkSymptoms()">Analyze Symptoms</button>
+                
+                <div id="symptom-results" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- Medication Reminders -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💊</div>
+                    <div>
+                        <h3>Medication Tracker</h3>
+                        <small style="color: var(--accent)">● Stay on Schedule</small>
+                    </div>
+                </div>
+                
+                <div id="medication-list">
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="color: #fff;">Amlodipine</strong>
+                                <div style="font-size: 0.9rem; color: #94a3b8;">5mg - Once daily</div>
+                            </div>
+                            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="takeMed(this)">
+                                Take
+                            </button>
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--accent);">
+                            ⏰ 8:00 AM (Due in 2 hours)
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="addMedication()">
+                    + Add Medication
+                </button>
+            </div>
+
+            <!-- Emergency -->
+            <div class="card" style="border-color: var(--danger);">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, var(--danger), #f97316);">🚨</div>
+                    <div>
+                        <h3>Emergency</h3>
+                        <small style="color: var(--danger)">● 24/7 Available</small>
+                    </div>
+                </div>
+                <p>If you are experiencing a medical emergency, contact emergency services immediately.</p>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--danger);">911</div>
+                    <div style="color: #94a3b8;">Emergency Services</div>
+                </div>
+                <button class="btn btn-danger" style="width: 100%; margin-top: 1rem;" onclick="callEmergency()">
+                    📞 Call Emergency
+                </button>
+            </div>
+        </div>
+
+        <!-- Education Section -->
+        <section id="education" style="margin-top: 4rem;">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">Health Education Center</h2>
+            <p style="text-align: center; color: #94a3b8; margin-bottom: 2rem;">Learn about disease prevention, balanced diet, and recognizing symptoms early.</p>
+            
+            <div class="dashboard" id="education-grid">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const API_BASE_URL = 'http://localhost:5000/api'; // Change for production
+        const CURRENT_PATIENT_ID = 1; // Simulated logged-in patient
+
+        // ==================== STATE MANAGEMENT ====================
+        let currentDoctor = null;
+        let healthChart = null;
+        let healthHistory = [];
+
+        // ==================== API FUNCTIONS ====================
+        
+        async function fetchAPI(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                // Fallback to local simulation if backend unavailable
+                return { success: false, error: 'Backend unavailable - using simulation mode' };
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+        
+        async function initApp() {
+            await loadStats();
+            await loadDoctors();
+            await loadOutbreaks();
+            loadEducation();
+            initHealthChart();
+            
+            // Set default date for appointments
+            document.getElementById('appointment-date').valueAsDate = new Date();
+        }
+
+        // ==================== STATS ====================
+        
+        async function loadStats() {
+            const data = await fetchAPI('/stats');
+            if (data.success) {
+                document.getElementById('stat-doctors').textContent = data.data.doctors_online;
+                document.getElementById('stat-patients').textContent = data.data.total_patients;
+                document.getElementById('stat-detections').textContent = data.data.diseases_detected;
+                document.getElementById('stat-response').textContent = data.data.response_time_avg;
+            } else {
+                // Fallback values
+                document.getElementById('stat-doctors').textContent = '12';
+                document.getElementById('stat-patients').textContent = '1.2k';
+                document.getElementById('stat-detections').textContent = '156';
+                document.getElementById('stat-response').textContent = '2.5m';
+            }
+        }
+
+        // ==================== DOCTORS ====================
+        
+        async function loadDoctors() {
+            const data = await fetchAPI('/doctors?status=online');
+            const list = document.getElementById('doctor-list');
+            const select = document.getElementById('appointment-doctor');
+            
+            if (data.success && data.data.length > 0) {
+                list.innerHTML = data.data.map(doc => `
+                    <div class="doctor-item" onclick="selectDoctor(${doc.id})">
+                        <img src="${doc.image}" alt="${doc.name}" class="doctor-avatar">
+                        <div class="doctor-info">
+                            <div class="doctor-name">${doc.name}</div>
+                            <div class="doctor-specialty">${doc.specialty} • ${doc.experience} yrs</div>
+                        </div>
+                        <span class="doctor-status status-${doc.status}">● ${doc.status}</span>
+                    </div>
+                `).join('');
+                
+                // Populate appointment dropdown
+                select.innerHTML = '<option value="">Choose a doctor...</option>' + 
+                    data.data.map(doc => `<option value="${doc.id}">${doc.name} - ${doc.specialty}</option>`).join('');
+            } else {
+                // Fallback doctors
+                const fallbackDoctors = [
+                    { id: 1, name: 'Dr. Sarah Johnson', specialty: 'General Medicine', status: 'online', image: 'https://i.pravatar.cc/150?img=5' },
+                    { id: 2, name: 'Dr. Michael Chen', specialty: 'Cardiology', status: 'online', image: 'https://i.pravatar.cc/150?img=11' },
+                    { id: 3, name: 'Dr. Emily Rodriguez', specialty: 'Pediatrics', status: 'busy', image: 'https://i.pravatar.cc/150?img=9' }
+                ];
+                
+                list.innerHTML = fallbackDoctors.map(doc => `
+                    <div class="doctor-item" onclick="selectDoctor(${doc.id})">
+                        <img src="${doc.image}" alt="${doc.name}" class="doctor-avatar">
+                        <div class="doctor-info">
+                            <div class="doctor-name">${doc.name}</div>
+                            <div class="doctor-specialty">${doc.specialty}</div>
+                        </div>
+                        <span class="doctor-status status-${doc.status}">● ${doc.status}</span>
+                    </div>
+                `).join('');
+                
+                select.innerHTML = '<option value="">Choose a doctor...</option>' + 
+                    fallbackDoctors.map(doc => `<option value="${doc.id}">${doc.name} - ${doc.specialty}</option>`).join('');
+            }
+        }
+
+        function selectDoctor(id) {
+            currentDoctor = id;
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML += `
+                <div class="message message-doctor">
+                    <strong>System</strong><br>
+                    Connected to doctor. You can now describe your symptoms.
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // ==================== CHAT ====================
+        
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const messagesDiv = document.getElementById('chat-messages');
+            const text = input.value.trim();
+            
+            if (!text) return;
+
+            // Add patient message
+            const patientMsg = document.createElement('div');
+            patientMsg.className = 'message message-patient';
+            patientMsg.innerHTML = `<strong>You</strong><br>${text}`;
+            messagesDiv.appendChild(patientMsg);
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Simulate doctor response
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const response = generateDoctorResponse(text);
+            const doctorMsg = document.createElement('div');
+            doctorMsg.className = 'message message-doctor';
+            doctorMsg.innerHTML = `<strong>Dr. Response</strong><br>${response}`;
+            messagesDiv.appendChild(doctorMsg);
+            messagesDiv.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function generateDoctorResponse(text) {
+            const lower = text.toLowerCase();
+            if (lower.includes('headache')) return "Headaches can be caused by stress, dehydration, or eye strain. Try resting in a dark room and drinking water. If persistent, consult a neurologist.";
+            if (lower.includes('fever')) return "Fever is often a sign of infection. Rest, stay hydrated, and monitor temperature. If it exceeds 39°C or lasts more than 3 days, seek immediate care.";
+            if (lower.includes('chest') || lower.includes('heart')) return "Chest pain requires careful evaluation. Are you experiencing shortness of breath? If yes, call emergency services immediately.";
+            if (lower.includes('diet') || lower.includes('food')) return "A balanced diet should include: 50% vegetables/fruits, 25% whole grains, 25% lean proteins. Limit sugar and processed foods.";
+            return "Thank you for sharing. Based on your symptoms, I recommend monitoring for 24 hours. If symptoms worsen, seek emergency care immediately.";
+        }
+
+        // ==================== HEALTH MONITOR ====================
+        
+        async function startMonitoring() {
+            const btn = document.querySelector('#health button');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px; display: inline-block; vertical-align: middle;"></div> Scanning...';
+
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const data = {
+                heart_rate: Math.floor(Math.random() * (100 - 60) + 60),
+                systolic: Math.floor(Math.random() * (140 - 110) + 110),
+                diastolic: Math.floor(Math.random() * (90 - 70) + 70),
+                oxygen_level: Math.floor(Math.random() * (100 - 95) + 95),
+                temperature: parseFloat((Math.random() * (37.5 - 36.1) + 36.1).toFixed(1))
+            };
+
+            // Update UI
+            document.getElementById('heart-rate').textContent = data.heart_rate;
+            document.getElementById('blood-pressure').textContent = `${data.systolic}/${data.diastolic}`;
+            document.getElementById('oxygen-level').textContent = data.oxygen_level + '%';
+            document.getElementById('temperature').textContent = data.temperature + '°C';
+
+            // Update status
+            updateStatus('hr-status', data.heart_rate, 60, 100);
+            updateStatus('bp-status', data.systolic, 90, 140);
+            updateStatus('ox-status', data.oxygen_level, 95, 100);
+            updateStatus('temp-status', data.temperature, 36.1, 37.5);
+
+            // Save to backend
+            const result = await fetchAPI('/health/record', {
+                method: 'POST',
+                body: JSON.stringify({ ...data, patient_id: CURRENT_PATIENT_ID })
+            });
+
+            // Update chart
+            healthHistory.push(data);
+            if (healthHistory.length > 10) healthHistory.shift();
+            updateHealthChart();
+
+            // Check alerts
+            const alerts = checkHealthAlerts(data);
+            const alertDiv = document.getElementById('health-alert');
+            
+            if (alerts.length > 0) {
+                alertDiv.style.display = 'block';
+                alertDiv.style.background = 'rgba(239, 68, 68, 0.2)';
+                alertDiv.style.border = '1px solid var(--danger)';
+                alertDiv.innerHTML = `
+                    <strong style="color: var(--danger)">⚠️ Health Alert:</strong><br>
+                    ${alerts.map(a => `• ${a}`).join('<br>')}
+                    <br><small>Please consult a doctor immediately.</small>
+                `;
+            } else {
+                alertDiv.style.display = 'block';
+                alertDiv.style.background = 'rgba(16, 185, 129, 0.2)';
+                alertDiv.style.border = '1px solid var(--success)';
+                alertDiv.innerHTML = `<strong style="color: var(--success)">✓ All vitals normal</strong>`;
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '🔍 Start Health Scan';
+        }
+
+        function updateStatus(id, value, min, max) {
+            const el = document.getElementById(id);
+            el.className = 'status-indicator';
+            if (value < min || value > max) el.classList.add('status-danger');
+            else if (value < min + (max-min)*0.1 || value > max - (max-min)*0.1) el.classList.add('status-warning');
+            else el.classList.add('status-normal');
+        }
+
+        function checkHealthAlerts(data) {
+            const alerts = [];
+            if (data.heart_rate > 100 || data.heart_rate < 60) alerts.push(`Abnormal heart rate: ${data.heart_rate} BPM`);
+            if (data.systolic > 140 || data.diastolic > 90) alerts.push(`High blood pressure: ${data.systolic}/${data.diastolic}`);
+            if (data.oxygen_level < 95) alerts.push(`Low oxygen: ${data.oxygen_level}%`);
+            if (data.temperature > 37.5) alerts.push(`Fever detected: ${data.temperature}°C`);
+            return alerts;
+        }
+
+        // ==================== HEALTH CHART ====================
+        
+        function initHealthChart() {
+            const ctx = document.getElementById('healthChart').getContext('2d');
+            healthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Heart Rate',
+                        data: [],
+                        borderColor: '#0ea5e9',
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Systolic BP',
+                        data: [],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateHealthChart() {
+            if (!healthChart) return;
+            
+            healthChart.data.labels = healthHistory.map((_, i) => `Reading ${i + 1}`);
+            healthChart.data.datasets[0].data = healthHistory.map(h => h.heart_rate);
+            healthChart.data.datasets[1].data = healthHistory.map(h => h.systolic);
+            healthChart.update();
+        }
+
+        // ==================== APPOINTMENTS ====================
+        
+        async function submitAppointment(e) {
+            e.preventDefault();
+            
+            const doctorId = document.getElementById('appointment-doctor').value;
+            const date = document.getElementById('appointment-date').value;
+            const time = document.getElementById('appointment-time').value;
+            const notes = document.getElementById('appointment-notes').value;
+            
+            if (!doctorId || !date || !time) return;
+
+            const result = await fetchAPI('/appointments', {
+                method: 'POST',
+                body: JSON.stringify({
+                    patient_id: CURRENT_PATIENT_ID,
+                    doctor_id: parseInt(doctorId),
+                    date,
+                    time,
+                    notes
+                })
+            });
+
+            if (result.success) {
+                document.getElementById('appointment-confirmation').style.display = 'block';
+                document.getElementById('appointment-form').reset();
+                setTimeout(() => {
+                    document.getElementById('appointment-confirmation').style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function bookAppointment() {
+            document.getElementById('consultation').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ==================== OUTBREAKS ====================
+        
+        async function loadOutbreaks() {
+            const data = await fetchAPI('/disease/outbreaks');
+            const list = document.getElementById('outbreak-list');
+            
+            if (data.success && data.data) {
+                list.innerHTML = data.data.map(outbreak => `
+                    <div class="outbreak-item">
+                        <div>
+                            <strong style="color: #fff;">${outbreak.disease}</strong>
+                            <div style="font-size: 0.9rem; color: #94a3b8;">
+                                ${outbreak.cases.toLocaleString()} cases • Trend: ${outbreak.trend}
+                            </div>
+                            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.3rem;">
+                                Regions: ${outbreak.regions.join(', ')}
+                            </div>
+                        </div>
+                        <span class="outbreak-severity severity-${outbreak.severity}">${outbreak.severity.toUpperCase()}</span>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<p style="text-align: center; color: #94a3b8;">Outbreak data unavailable. Please check CDC website.</p>';
+            }
+        }
+
+        // ==================== SYMPTOM CHECKER ====================
+        
+        async function checkSymptoms() {
+            const input = document.getElementById('symptom-input');
+            const resultsDiv = document.getElementById('symptom-results');
+            const symptoms = input.value.trim();
+            
+            if (!symptoms) return;
+            resultsDiv.innerHTML = '<div class="spinner" style="margin: 1rem auto;"></div>';
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const conditions = analyzeSymptoms(symptoms);
+            resultsDiv.innerHTML = `
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px;">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Analysis Results:</h4>
+                    ${conditions.map(c => `
+                        <div style="padding: 0.8rem; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 0.5rem;">
+                            <strong style="color: ${c.severity === 'high' ? 'var(--danger)' : c.severity === 'medium' ? 'var(--accent)' : 'var(--success)'}">
+                                ${c.name} (${c.probability}% match)
+                            </strong>
+                            <p style="font-size: 0.9rem; margin-top: 0.3rem; color: #94a3b8;">${c.advice}</p>
+                        </div>
+                    `).join('')}
+                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 1rem;">⚠️ This is not a medical diagnosis. Consult a doctor for proper evaluation.</p>
+                </div>
+            `;
+        }
+
+        function analyzeSymptoms(symptoms) {
+            const lower = symptoms.toLowerCase();
+            const conditions = [];
+            if (lower.includes('headache')) conditions.push({ name: 'Tension Headache', probability: 85, severity: 'low', advice: 'Rest, hydration, and OTC pain relievers.' });
+            if (lower.includes('fever')) conditions.push({ name: 'Viral Infection', probability: 78, severity: 'medium', advice: 'Rest, fluids, and fever reducers.' });
+            if (lower.includes('chest')) conditions.push({ name: 'Cardiac Issue', probability: 65, severity: 'high', advice: 'Seek immediate medical attention.' });
+            if (conditions.length === 0) conditions.push({ name: 'General Malaise', probability: 40, severity: 'low', advice: 'Monitor symptoms. Consult if persistent.' });
+            return conditions.sort((a, b) => b.probability - a.probability);
+        }
+
+        // ==================== MEDICATIONS ====================
+        
+        function takeMed(btn) {
+            btn.textContent = '✓ Taken';
+            btn.style.background = 'var(--success)';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.textContent = 'Take';
+                btn.style.background = '';
+                btn.disabled = false;
+            }, 86400000); // Reset after 24 hours
+        }
+
+        function addMedication() {
+            const name = prompt('Medication name:');
+            if (!name) return;
+            const dose = prompt('Dosage (e.g., 5mg):', '5mg');
+            const frequency = prompt('Frequency (e.g., Once daily):', 'Once daily');
+            
+            const list = document.getElementById('medication-list');
+            const div = document.createElement('div');
+            div.style.cssText = 'padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 0.5rem;';
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: #fff;">${name}</strong>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">${dose} - ${frequency}</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="takeMed(this)">
+                        Take
+                    </button>
+                </div>
+            `;
+            list.appendChild(div);
+        }
+
+        // ==================== EDUCATION ====================
+        
+        const educationData = [
+            {
+                id: 1,
+                title: "Balanced Diet Essentials",
+                icon: "🥗",
+                category: "Nutrition",
+                content: `
+                    <h2>🥗 The Importance of a Balanced Diet</h2>
+                    <p>A balanced diet provides the nutrients your body needs to function correctly.</p>
+                    <h3>Key Components:</h3>
+                    <ul>
+                        <li><strong>Vegetables & Fruits (50%):</strong> Rich in vitamins, minerals, and fiber.</li>
+                        <li><strong>Whole Grains (25%):</strong> Brown rice, oats, quinoa.</li>
+                        <li><strong>Lean Proteins (25%):</strong> Fish, poultry, beans, nuts.</li>
+                    </ul>
+                    <h3>⚠️ Diseases Prevented:</h3>
+                    <ul>
+                        <li>Heart disease</li>
+                        <li>Type 2 diabetes</li>
+                        <li>Obesity</li>
+                        <li>Certain cancers</li>
+                    </ul>
+                `
+            },
+            {
+                id: 2,
+                title: "Hypertension (High BP)",
+                icon: "🫀",
+                category: "Chronic Disease",
+                content: `
+                    <h2>🫀 Understanding Hypertension</h2>
+                    <p>High blood pressure is often called the "silent killer" because it rarely causes symptoms until serious damage occurs.</p>
+                    <h3>Warning Signs:</h3>
+                    <ul>
+                        <li>Severe headaches</li>
+                        <li>Nosebleeds</li>
+                        <li>Fatigue or confusion</li>
+                        <li>Vision problems</li>
+                        <li>Chest pain</li>
+                    </ul>
+                    <h3>Prevention:</h3>
+                    <ul>
+                        <li>Reduce sodium intake</li>
+                        <li>Maintain healthy weight</li>
+                        <li>Exercise regularly</li>
+                        <li>Limit alcohol</li>
+                    </ul>
+                `
+            },
+            {
+                id: 3,
+                title: "Disease Outbreaks",
+                icon: "🦠",
+                category: "Prevention",
+                content: `
+                    <h2>🦠 Understanding Disease Outbreaks</h2>
+                    <h3>Prevention Measures:</h3>
+                    <ol>
+                        <li><strong>Vaccination:</strong> Keep immunizations up to date</li>
+                        <li><strong>Hygiene:</strong> Wash hands frequently</li>
+                        <li><strong>Sanitation:</strong> Safe water and waste disposal</li>
+                        <li><strong>Isolation:</strong> Stay home when sick</li>
+                    </ol>
+                `
+            },
+            {
+                id: 4,
+                title: "Heart Health",
+                icon: "❤️",
+                category: "Cardiology",
+                content: `
+                    <h2>❤️ Maintaining Heart Health</h2>
+                    <h3>Know Your Numbers:</h3>
+                    <ul>
+                        <li>Blood Pressure: < 120/80 mmHg</li>
+                        <li>Heart Rate: 60-100 bpm</li>
+                        <li>Cholesterol: Total < 200 mg/dL</li>
+                    </ul>
+                    <h3>Heart-Healthy Habits:</h3>
+                    <ol>
+                        <li>30 minutes of exercise daily</li>
+                        <li>Eat omega-3 rich foods</li>
+                        <li>Reduce saturated fats</li>
+                        <li>Manage stress</li>
+                    </ol>
+                `
+            }
+        ];
+
+        function loadEducation() {
+            const grid = document.getElementById('education-grid');
+            grid.innerHTML = educationData.map(item => `
+                <div class="card" onclick="openEducation(${item.id})" style="cursor: pointer;">
+                    <div class="card-header">
+                        <div class="card-icon">${item.icon}</div>
+                        <div>
+                            <h3>${item.title}</h3>
+                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem;">${item.category}</span>
+                        </div>
+                    </div>
+                    <p style="color: #94a3b8;">Click to learn about prevention, symptoms, and management.</p>
+                </div>
+            `).join('');
+        }
+
+        function openEducation(id) {
+            const item = educationData.find(e => e.id === id);
+            if (!item) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 2rem;';
+            modal.innerHTML = `
+                <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid var(--glass); border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative;">
+                    <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">&times;</button>
+                    <div style="color: var(--primary); font-size: 3rem; margin-bottom: 1rem;">${item.icon}</div>
+                    ${item.content}
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // ==================== UTILITIES ====================
+        
+        function startConsultation() {
+            document.getElementById('consultation').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function checkHealth() {
+            document.getElementById('health').scrollIntoView({ behavior: 'smooth' });
+            startMonitoring();
+        }
+
+        function callEmergency() {
+            if (confirm('⚠️ This will simulate calling Emergency Services (911).\n\nDo you want to proceed?')) {
+                alert('📞 Connecting to Emergency Services...\n\nIn production, this would initiate an actual emergency call.');
+            }
+        }
+
+        // Initialize app
+        initApp();
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedicalTrack Hackathon 2026| Medical Adherence & Vital Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .heartbeat {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            14% {
+                transform: scale(1.1);
+            }
+
+            28% {
+                transform: scale(1);
+            }
+
+            42% {
+                transform: scale(1.1);
+            }
+
+            70% {
+                transform: scale(1);
+            }
+        }
+
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .grid-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(99, 102, 241, 0.15) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        .vital-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .vital-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease-in-out;
+        }
+
+        .medication-pill {
+            animation: pillFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes pillFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+
+        .scan-line {
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .parallax-layer {
+            transition: transform 0.2s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-tight">MedTrack<span
+                            class="text-blue-600">Hack</span></span>
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#challenge"
+                        class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Challenge</a>
+                    <a href="#features"
+                        class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Features</a>
+                    <a href="#demo"
+                        class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Live Demo</a>
+                    <a href="#prizes"
+                        class="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Prizes</a>
+                    <button
+                        class="bg-slate-900 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-slate-800 transition-all hover:scale-105">
+                        Register Now
+                    </button>
+                </div>
+                <button class="md:hidden p-2" onclick="toggleMobileMenu()">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden glass-panel border-t border-slate-200">
+            <div class="px-4 py-3 space-y-2">
+                <a href="#challenge"
+                    class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-blue-600">Challenge</a>
+                <a href="#features"
+                    class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-blue-600">Features</a>
+                <a href="#demo" class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-blue-600">Live
+                    Demo</a>
+                <a href="#prizes"
+                    class="block px-3 py-2 text-sm font-medium text-slate-600 hover:text-blue-600">Prizes</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden grid-pattern">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl floating"
+                style="animation-delay: 0s;"></div>
+            <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl floating"
+                style="animation-delay: 2s;"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl">
+            </div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-slate-200 shadow-sm mb-8 animate-fade-in">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Hackathon 2024 • 48
+                    Hours</span>
+            </div>
+
+            <h1 class="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                <span class="block text-slate-900">Revolutionizing</span>
+                <span class="gradient-text typing-cursor" id="heroText">Medical Adherence</span>
+            </h1>
+
+            <p class="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto mb-10 font-light">
+                Build the future of healthcare. Create intelligent solutions for medication adherence and real-time
+                vital monitoring that save lives.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <button
+                    class="group relative px-8 py-4 bg-slate-900 text-white rounded-full font-semibold overflow-hidden hover:scale-105 transition-all">
+                    <span class="relative z-10 flex items-center gap-2">
+                        Join the Challenge
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </span>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                </button>
+                <button
+                    class="px-8 py-4 bg-white text-slate-900 border-2 border-slate-200 rounded-full font-semibold hover:border-blue-500 hover:text-blue-600 transition-all">
+                    View Guidelines
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-slate-900">$50K</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider">Prize Pool</div>
+                </div>
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-slate-900">48h</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider">Duration</div>
+                </div>
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-slate-900">200+</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider">Participants</div>
+                </div>
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-slate-900">3</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider">Tracks</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3">
+                </path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Challenge Tracks -->
+    <section id="challenge" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">Challenge Tracks</h2>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">Choose your focus area and build solutions that
+                    address critical healthcare challenges</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Track 1 -->
+                <div
+                    class="group relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl group-hover:bg-blue-400/20 transition-all">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-14 h-14 bg-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-3">Smart Adherence</h3>
+                        <p class="text-slate-600 mb-6">AI-powered medication reminders, pill recognition, and adherence
+                            prediction algorithms that improve patient compliance.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Computer
+                                Vision</span>
+                            <span
+                                class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">NLP</span>
+                            <span
+                                class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">IoT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Track 2 -->
+                <div
+                    class="group relative bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl p-8 border border-rose-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-rose-400/10 rounded-full blur-2xl group-hover:bg-rose-400/20 transition-all">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-14 h-14 bg-rose-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-rose-500/30 heartbeat">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-3">Vital Monitoring</h3>
+                        <p class="text-slate-600 mb-6">Real-time biometric tracking, anomaly detection, and predictive
+                            alerts for heart rate, BP, SpO2, and temperature.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-medium">Edge
+                                Computing</span>
+                            <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-medium">Signal
+                                Processing</span>
+                            <span
+                                class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-medium">Real-time</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Track 3 -->
+                <div
+                    class="group relative bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-8 border border-emerald-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl group-hover:bg-emerald-400/20 transition-all">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-slate-900 mb-3">Care Coordination</h3>
+                        <p class="text-slate-600 mb-6">Unified platforms connecting patients, caregivers, and providers
+                            with seamless data sharing and communication.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">FHIR/HL7</span>
+                            <span
+                                class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">Blockchain</span>
+                            <span
+                                class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">HIPAA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Dashboard -->
+    <section id="demo" class="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 grid-pattern opacity-20"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Live Monitoring Demo</h2>
+                <p class="text-slate-400 text-lg">Experience real-time vital monitoring and adherence tracking in action
+                </p>
+            </div>
+
+            <!-- Dashboard Container -->
+            <div class="glass-panel bg-slate-800/50 rounded-3xl p-6 md:p-8 border border-slate-700 shadow-2xl">
+                <!-- Dashboard Header -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                            JD
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg">benedict ombaso </h3>
+                            <p class="text-sm text-slate-400">Patient ID: #MT-2026-001 • Age: 34</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="flex items-center gap-2 px-4 py-2 bg-green-500/20 rounded-full border border-green-500/30">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span class="text-sm font-medium text-green-400">Live Monitoring</span>
+                        </div>
+                        <button onclick="toggleSimulation()" id="simBtn"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium transition-colors">
+                            Pause Simulation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vitals Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <!-- Heart Rate -->
+                    <div
+                        class="vital-card bg-slate-800 rounded-2xl p-4 border border-slate-700 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-rose-500/10 rounded-full blur-xl"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-slate-400 text-sm">Heart Rate</span>
+                            <svg class="w-5 h-5 text-rose-500 heartbeat" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-bold" id="heartRate">72</span>
+                            <span class="text-sm text-slate-400">BPM</span>
+                        </div>
+                        <div class="mt-2 h-1 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-rose-500 rounded-full transition-all duration-500" id="heartRateBar"
+                                style="width: 60%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Blood Pressure -->
+                    <div
+                        class="vital-card bg-slate-800 rounded-2xl p-4 border border-slate-700 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full blur-xl"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-slate-400 text-sm">Blood Pressure</span>
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-bold" id="bp">120/80</span>
+                            <span class="text-sm text-slate-400">mmHg</span>
+                        </div>
+                        <div class="mt-2 h-1 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full transition-all duration-500" style="width: 55%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SpO2 -->
+                    <div
+                        class="vital-card bg-slate-800 rounded-2xl p-4 border border-slate-700 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-cyan-500/10 rounded-full blur-xl"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-slate-400 text-sm">SpO2</span>
+                            <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-bold" id="spo2">98</span>
+                            <span class="text-sm text-slate-400">%</span>
+                        </div>
+                        <div class="mt-2 h-1 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-cyan-500 rounded-full transition-all duration-500" id="spo2Bar"
+                                style="width: 98%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Temperature -->
+                    <div
+                        class="vital-card bg-slate-800 rounded-2xl p-4 border border-slate-700 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full blur-xl"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-slate-400 text-sm">Temperature</span>
+                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-bold" id="temp">36.6</span>
+                            <span class="text-sm text-slate-400">°C</span>
+                        </div>
+                        <div class="mt-2 h-1 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-amber-500 rounded-full transition-all duration-500" id="tempBar"
+                                style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <!-- ECG Chart -->
+                    <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-semibold text-slate-200">ECG Monitor</h4>
+                            <span class="text-xs text-slate-500">Lead II • Real-time</span>
+                        </div>
+                        <canvas id="ecgChart" height="150"></canvas>
+                    </div>
+
+                    <!-- Adherence Chart -->
+                    <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-semibold text-slate-200">Medication Adherence</h4>
+                            <span class="text-xs text-green-400">92% This Week</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-slate-700/50 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="medication-pill w-10 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                        <span class="text-xs font-bold text-white">AM</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Lisinopril 10mg</p>
+                                        <p class="text-xs text-slate-400">8:00 AM • Taken</p>
+                                    </div>
+                                </div>
+                                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-700/50 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="medication-pill w-10 h-6 bg-purple-500 rounded-full flex items-center justify-center"
+                                        style="animation-delay: 0.5s;">
+                                        <span class="text-xs font-bold text-white">PM</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Metformin 500mg</p>
+                                        <p class="text-xs text-slate-400">8:00 PM • Pending</p>
+                                    </div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border-2 border-slate-500"></div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-700/50 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="medication-pill w-10 h-6 bg-rose-500 rounded-full flex items-center justify-center"
+                                        style="animation-delay: 1s;">
+                                        <span class="text-xs font-bold text-white">PRN</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Aspirin 81mg</p>
+                                        <p class="text-xs text-slate-400">As needed • Skipped</p>
+                                    </div>
+                                </div>
+                                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Section -->
+                <div
+                    class="bg-gradient-to-r from-rose-500/10 to-orange-500/10 border border-rose-500/20 rounded-2xl p-4 flex items-center gap-4">
+                    <div class="w-10 h-10 bg-rose-500/20 rounded-full flex items-center justify-center pulse-ring">
+                        <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium text-rose-400">Adherence Alert</p>
+                        <p class="text-sm text-slate-400">Missed evening dose detected. Caregiver notification sent.</p>
+                    </div>
+                    <button
+                        class="px-4 py-2 bg-rose-500 hover:bg-rose-600 rounded-lg text-sm font-medium transition-colors">
+                        Acknowledge
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">Platform Features</h2>
+                <p class="text-lg text-slate-600">Everything you need to build winning healthcare solutions</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div
+                        class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-900 mb-2">Edge AI SDK</h3>
+                    <p class="text-slate-600 text-sm">Deploy machine learning models directly on wearable devices for
+                        real-time inference without cloud dependency.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div
+                        class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-900 mb-2">HIPAA-Ready APIs</h3>
+                    <p class="text-slate-600 text-sm">Pre-configured compliant endpoints with end-to-end encryption,
+                        audit logging, and patient consent management.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div
+                        class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-900 mb-2">FHIR R4 Support</h3>
+                    <p class="text-slate-600 text-sm">Native Fast Healthcare Interoperability Resources support for
+                        seamless EHR integration and data exchange.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div
+                        class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-900 mb-2">Smart Alerts</h3>
+                    <p class="text-slate-600 text-sm">Context-aware notification system with escalation protocols and
+                        multi-channel delivery (SMS, push, voice).</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div
+                        class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-900 mb-2">Analytics Dashboard</h3>
+                    <p class="text-slate-600 text-sm">Real-time visualization components with customizable charts, trend
+                        analysis, and export capabilities.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div
+                        class="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-900 mb-2">Care Team</h3>
+                    <p class="text-slate-600 text-sm">Collaborative workspace for physicians, nurses, caregivers, and
+                        family members with role-based access.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prizes Section -->
+    <section id="prizes" class="py-24 bg-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-50 to-white"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">Prize Pool</h2>
+                <p class="text-lg text-slate-600">Compete for cash prizes, cloud credits, and mentorship opportunities
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- 2nd Place -->
+                <div class="relative group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-slate-200 to-slate-300 rounded-3xl transform rotate-2 group-hover:rotate-1 transition-transform">
+                    </div>
+                    <div class="relative bg-white rounded-3xl p-8 border border-slate-200 text-center">
+                        <div
+                            class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                            🥈</div>
+                        <h3 class="font-display text-2xl font-bold text-slate-700 mb-2">$10,000</h3>
+                        <p class="text-slate-600 font-medium mb-4">2nd Place</p>
+                        <ul class="text-sm text-slate-500 space-y-2">
+                            <li>$5,000 AWS Credits</li>
+                            <li>Legal Consultation</li>
+                            <li>Investor Pitch Session</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 1st Place -->
+                <div class="relative group -mt-4 md:-mt-8">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-amber-300 to-amber-500 rounded-3xl transform -rotate-1 group-hover:rotate-0 transition-transform shadow-2xl">
+                    </div>
+                    <div class="relative bg-white rounded-3xl p-8 border-2 border-amber-400 text-center shadow-xl">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2">
+                            <span
+                                class="bg-amber-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">WINNER</span>
+                        </div>
+                        <div
+                            class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl mt-2">
+                            🥇</div>
+                        <h3 class="font-display text-3xl font-bold text-amber-600 mb-2">$25,000</h3>
+                        <p class="text-slate-900 font-medium mb-4">Grand Prize</p>
+                        <ul class="text-sm text-slate-600 space-y-2">
+                            <li>$10,000 AWS Credits</li>
+                            <li>YC Interview Prep</li>
+                            <li>Patent Filing Support</li>
+                            <li>6-Month Incubation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="relative group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-orange-200 to-orange-300 rounded-3xl transform -rotate-2 group-hover:-rotate-1 transition-transform">
+                    </div>
+                    <div class="relative bg-white rounded-3xl p-8 border border-orange-200 text-center">
+                        <div
+                            class="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                            🥉</div>
+                        <h3 class="font-display text-2xl font-bold text-orange-700 mb-2">$5,000</h3>
+                        <p class="text-slate-600 font-medium mb-4">3rd Place</p>
+                        <ul class="text-sm text-slate-500 space-y-2">
+                            <li>$3,000 AWS Credits</li>
+                            <li>Mentorship Program</li>
+                            <li>Product Design Review</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Categories -->
+            <div class="mt-16 grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200">
+                    <p class="font-semibold text-slate-900 mb-1">Best AI/ML Solution</p>
+                    <p class="text-2xl font-bold text-blue-600">$3,000</p>
+                </div>
+                <div class="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200">
+                    <p class="font-semibold text-slate-900 mb-1">Best UX Design</p>
+                    <p class="text-2xl font-bold text-purple-600">$2,000</p>
+                </div>
+                <div class="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200">
+                    <p class="font-semibold text-slate-900 mb-1">Social Impact Award</p>
+                    <p class="text-2xl font-bold text-green-600">$2,000</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Schedule -->
+    <section class="py-24 bg-slate-900 text-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="font-display text-4xl font-bold text-center mb-12">Event Schedule</h2>
+
+            <div class="space-y-6">
+                <!-- Day 1 -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:flex items-start gap-8">
+                        <div class="md:w-32 flex-shrink-0 mb-2 md:mb-0">
+                            <span class="text-blue-400 font-semibold">Day 1</span>
+                            <p class="text-slate-400 text-sm">Oct 15</p>
+                        </div>
+                        <div class="flex-1 space-y-4">
+                            <div
+                                class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-slate-400 text-sm w-24">09:00 AM</span>
+                                <div>
+                                    <h4 class="font-semibold">Opening Ceremony & Keynote</h4>
+                                    <p class="text-sm text-slate-400">Dr. Sarah Chen - Chief Medical Officer, HealthTech
+                                        Inc.</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-slate-400 text-sm w-24">11:00 AM</span>
+                                <div>
+                                    <h4 class="font-semibold">Team Formation & Ideation</h4>
+                                    <p class="text-sm text-slate-400">Networking session and challenge selection</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-slate-400 text-sm w-24">02:00 PM</span>
+                                <div>
+                                    <h4 class="font-semibold">Hacking Begins</h4>
+                                    <p class="text-sm text-slate-400">Access to APIs, SDKs, and mentor assignment</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Connector -->
+                <div class="hidden md:block absolute left-[140px] top-0 bottom-0 w-px bg-slate-700"></div>
+
+                <!-- Day 2 -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:flex items-start gap-8">
+                        <div class="md:w-32 flex-shrink-0 mb-2 md:mb-0">
+                            <span class="text-blue-400 font-semibold">Day 2</span>
+                            <p class="text-slate-400 text-sm">Oct 16</p>
+                        </div>
+                        <div class="flex-1 space-y-4">
+                            <div
+                                class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-slate-400 text-sm w-24">10:00 AM</span>
+                                <div>
+                                    <h4 class="font-semibold">Workshop: FDA Compliance</h4>
+                                    <p class="text-sm text-slate-400">Navigating regulatory requirements for health apps
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-slate-400 text-sm w-24">08:00 PM</span>
+                                <div>
+                                    <h4 class="font-semibold">Mid-point Check-in</h4>
+                                    <p class="text-sm text-slate-400">Progress demos and feedback sessions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:flex items-start gap-8">
+                        <div class="md:w-32 flex-shrink-0 mb-2 md:mb-0">
+                            <span class="text-blue-400 font-semibold">Day 3</span>
+                            <p class="text-slate-400 text-sm">Oct 17</p>
+                        </div>
+                        <div class="flex-1 space-y-4">
+                            <div
+                                class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-slate-400 text-sm w-24">09:00 AM</span>
+                                <div>
+                                    <h4 class="font-semibold">Hacking Ends</h4>
+                                    <p class="text-sm text-slate-400">Code freeze and submission deadline</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-slate-400 text-sm w-24">11:00 AM</span>
+                                <div>
+                                    <h4 class="font-semibold">Final Presentations</h4>
+                                    <p class="text-sm text-slate-400">5-minute demos to judges panel</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-blue-600 rounded-xl p-4 border border-blue-500 flex flex-col md:flex-row md:items-center gap-4">
+                                <span class="text-blue-200 text-sm w-24">04:00 PM</span>
+                                <div>
+                                    <h4 class="font-semibold">Awards Ceremony</h4>
+                                    <p class="text-sm text-blue-200">Winners announced and closing celebration</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sponsors -->
+    <section class="py-16 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-8">Powered By Industry Leaders
+            </p>
+            <div
+                class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="h-8 w-32 bg-slate-400 rounded-md flex items-center justify-center text-slate-600 font-bold">
+                    AWS</div>
+                <div class="h-8 w-32 bg-slate-400 rounded-md flex items-center justify-center text-slate-600 font-bold">
+                    Mayo Clinic</div>
+                <div class="h-8 w-32 bg-slate-400 rounded-md flex items-center justify-center text-slate-600 font-bold">
+                    Philips</div>
+                <div class="h-8 w-32 bg-slate-400 rounded-md flex items-center justify-center text-slate-600 font-bold">
+                    Epic</div>
+                <div class="h-8 w-32 bg-slate-400 rounded-md flex items-center justify-center text-slate-600 font-bold">
+                    Verily</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 bg-gradient-to-br from-blue-600 to-purple-700 text-white text-center">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">Ready to Transform Healthcare?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Join 200+ developers, designers, and healthcare
+                professionals for 48 hours of innovation. Registration closes October 10th.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                    class="px-8 py-4 bg-white text-blue-600 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
+                    Register Your Team
+                </button>
+                <button
+                    class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-bold hover:bg-white/10 transition-colors">
+                    Download Rules
+                </button>
+            </div>
+            <p class="mt-6 text-sm text-blue-200">Questions? Contact us at hackathon@medtrack.io</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-display font-bold text-xl text-white">MedTrack<span
+                                class="text-blue-500">Hack</span></span>
+                    </div>
+                    <p class="text-sm">Empowering innovation in medical adherence and vital monitoring technologies.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">API Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">SDK Downloads</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Sample Datasets</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Design System</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Community</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Discord Server</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Devpost</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">GitHub</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Mentorship</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Code of Conduct</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">HIPAA Notice</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-800 text-sm text-center">
+                <p>&copy; 2024 MedTrack Hackathon. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Typing Effect
+        const texts = ['Medical Adherence', 'Vital Monitoring', 'Patient Care', 'Health Equity'];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const heroText = document.getElementById('heroText');
+
+        function typeEffect() {
+            const currentText = texts[textIndex];
+
+            if (isDeleting) {
+                heroText.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                heroText.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === currentText.length) {
+                isDeleting = true;
+                setTimeout(typeEffect, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+                setTimeout(typeEffect, 500);
+            } else {
+                setTimeout(typeEffect, isDeleting ? 50 : 100);
+            }
+        }
+
+        setTimeout(typeEffect, 1000);
+
+        // ECG Chart Simulation
+        const ctx = document.getElementById('ecgChart').getContext('2d');
+        const dataPoints = 100;
+        const initialData = Array(dataPoints).fill(0);
+
+        const ecgChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(dataPoints).fill(''),
+                datasets: [{
+                    label: 'ECG',
+                    data: initialData,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: {
+                        display: true,
+                        min: -2,
+                        max: 3,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.5)' }
+                    }
+                },
+                animation: false
+            }
+        });
+
+        // Vital Signs Simulation
+        let simulationRunning = true;
+        let simulationInterval;
+
+        function generateECGValue(index) {
+            // Simulate PQRST wave
+            const position = index % 20;
+            if (position === 0) return 0.2; // P wave
+            if (position === 2) return -0.2; // Q
+            if (position === 3) return 2.5; // R
+            if (position === 4) return -0.5; // S
+            if (position === 6) return 0.3; // T
+            return 0;
+        }
+
+        function updateVitals() {
+            if (!simulationRunning) return;
+
+            // Update Heart Rate (60-100 BPM)
+            const heartRate = Math.floor(60 + Math.random() * 40);
+            document.getElementById('heartRate').textContent = heartRate;
+            document.getElementById('heartRateBar').style.width = `${heartRate}%`;
+
+            // Update SpO2 (95-100%)
+            const spo2 = Math.floor(95 + Math.random() * 5);
+            document.getElementById('spo2').textContent = spo2;
+            document.getElementById('spo2Bar').style.width = `${spo2}%`;
+
+            // Update Temp (36.0-37.5)
+            const temp = (36.0 + Math.random() * 1.5).toFixed(1);
+            document.getElementById('temp').textContent = temp;
+            document.getElementById('tempBar').style.width = `${((temp - 35) / 5) * 100}%`;
+
+            // Update ECG
+            const newData = ecgChart.data.datasets[0].data;
+            newData.shift();
+            newData.push(generateECGValue(Date.now() / 100));
+            ecgChart.update('none');
+        }
+
+        function toggleSimulation() {
+            simulationRunning = !simulationRunning;
+            const btn = document.getElementById('simBtn');
+            btn.textContent = simulationRunning ? 'Pause Simulation' : 'Resume Simulation';
+            btn.classList.toggle('bg-blue-600');
+            btn.classList.toggle('bg-slate-600');
+        }
+
+        // Start simulation
+        simulationInterval = setInterval(updateVitals, 1000);
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                }
+            });
+        });
+
+        // Parallax effect on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.floating');
+            parallaxElements.forEach((el, index) => {
+                const speed = 0.5 + (index * 0.1);
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Add intersection observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards
+        document.querySelectorAll('.vital-card, .group').forEach((el) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>
