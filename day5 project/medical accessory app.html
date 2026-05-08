@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediConnect Pro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--p:#0ea5e9;--s:#06b6d4;--a:#f59e0b;--d:#ef4444;--g:#10b981;--v:#8b5cf6;--dk:#0f172a;--dc:#1e293b;--lt:#f8fafc;--mt:#94a3b8;--md:#64748b;--gl:rgba(255,255,255,.1);--bd:rgba(255,255,255,.08);--r:12px;--t:all .3s ease}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b,#0f172a);color:var(--lt);min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inherit}
+
+/* AUTH */
+.auth{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a,#1e293b,#0f172a);transition:opacity .5s,visibility .5s}
+.auth.hide{opacity:0;visibility:hidden;pointer-events:none}
+.auth-orb{position:absolute;border-radius:50%;filter:blur(60px);animation:orbF 8s ease-in-out infinite}
+@keyframes orbF{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}
+.auth-box{position:relative;z-index:1;width:440px;max-width:92vw;max-height:92vh;overflow-y:auto}
+.auth-card{background:rgba(30,41,59,.7);backdrop-filter:blur(20px);border:1px solid var(--bd);border-radius:20px;padding:2.5rem}
+.auth-logo{text-align:center;margin-bottom:2rem}
+.auth-logo .li{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--p),var(--s));display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff;margin-bottom:.8rem;box-shadow:0 8px 25px rgba(14,165,233,.3)}
+.auth-logo h1{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-logo p{color:var(--mt);font-size:.9rem;margin-top:.3rem}
+.rtabs{display:flex;background:rgba(0,0,0,.3);border-radius:var(--r);padding:4px;margin-bottom:1.8rem}
+.rtab{flex:1;padding:.7rem;text-align:center;border-radius:8px;font-weight:600;font-size:.9rem;color:var(--mt);border:none;background:none;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:var(--t)}
+.rtab.on{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;box-shadow:0 4px 12px rgba(14,165,233,.3)}
+.rtab:not(.on):hover{background:rgba(255,255,255,.05);color:var(--lt)}
+.af{display:none;animation:afi .4s ease}.af.on{display:block}
+@keyframes afi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.ig{margin-bottom:1rem;position:relative}
+.ig label{display:block;margin-bottom:.4rem;color:var(--mt);font-size:.85rem;font-weight:500}
+.ig .iw{position:relative}
+.ig .ii{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--md);font-size:.9rem;pointer-events:none}
+.ig input,.ig select{width:100%;padding:.75rem .75rem .75rem 2.5rem;border:1px solid var(--bd);background:rgba(0,0,0,.2);color:#fff;border-radius:8px;outline:none;font-size:.9rem;transition:var(--t)}
+.ig input:focus,.ig select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
+.ig select{cursor:pointer;-webkit-appearance:none}
+.ig select option{background:var(--dc);color:#fff}
+.ig .ie{color:var(--d);font-size:.78rem;margin-top:.3rem;display:none}
+.ig.err input,.ig.err select{border-color:var(--d)}.ig.err .ie{display:block}
+.tpw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--md);padding:4px;font-size:.9rem}.tpw:hover{color:var(--lt)}
+.abtn{width:100%;padding:.85rem;border:none;border-radius:var(--r);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem;transition:var(--t)}
+.abp{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;box-shadow:0 4px 15px rgba(14,165,233,.3)}.abp:hover{transform:translateY(-2px);box-shadow:0 6px 25px rgba(14,165,233,.5)}
+.asw{text-align:center;margin-top:1.2rem;font-size:.9rem;color:var(--mt)}.asw a{color:var(--p);cursor:pointer;font-weight:600;text-decoration:none}.asw a:hover{text-decoration:underline}
+.arm{display:flex;align-items:center;gap:.5rem;margin:.8rem 0;font-size:.85rem;color:var(--mt);cursor:pointer}.arm input{width:16px;height:16px;accent-color:var(--p)}
+.dacc{margin-top:1.5rem;padding:1rem;background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.15);border-radius:var(--r)}
+.dacc h4{font-size:.8rem;color:var(--p);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.dai{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;font-size:.8rem;color:var(--mt)}
+.dai code{background:rgba(0,0,0,.3);padding:.15rem .5rem;border-radius:4px;font-size:.78rem;color:var(--lt);cursor:pointer;transition:var(--t)}.dai code:hover{background:rgba(14,165,233,.2)}
+
+/* APP */
+.app{display:none;opacity:0;transition:opacity .5s}.app.vis{display:block;opacity:1}
+.bga{position:fixed;inset:0;z-index:-1;overflow:hidden}.bga::before{content:'';position:absolute;width:200%;height:200%;background:radial-gradient(circle,rgba(14,165,233,.08) 0%,transparent 70%);animation:bp 20s ease-in-out infinite}
+@keyframes bp{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-30%,-30%) scale(1.2)}}
+
+nav{background:rgba(15,23,42,.85);backdrop-filter:blur(12px);padding:.8rem 2rem;position:sticky;top:0;z-index:1000;border-bottom:1px solid var(--bd)}
+.nc{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:.5rem;cursor:pointer}.logo i{-webkit-text-fill-color:var(--p);font-size:1.4rem}
+.nl{display:flex;gap:.5rem;list-style:none}.nl a{color:var(--lt);text-decoration:none;font-weight:500;padding:.5rem 1rem;border-radius:8px;font-size:.95rem;transition:var(--t);display:flex;align-items:center;gap:.4rem}.nl a:hover,.nl a.on{background:var(--gl);color:var(--p)}
+.nr{display:flex;align-items:center;gap:.8rem}
+.up{display:flex;align-items:center;gap:.6rem;padding:.4rem .8rem .4rem .4rem;background:rgba(0,0,0,.2);border-radius:50px;border:1px solid var(--bd);cursor:pointer;transition:var(--t)}.up:hover{background:rgba(0,0,0,.3)}
+.ua{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
+.ua.pa{background:linear-gradient(135deg,var(--p),var(--s))}.ua.da{background:linear-gradient(135deg,var(--g),#059669)}
+.ui{line-height:1.2}.un{font-size:.8rem;font-weight:600}.ur{font-size:.7rem;color:var(--mt)}
+.lo{background:none;border:1px solid rgba(239,68,68,.3);color:var(--d);padding:.4rem .8rem;border-radius:8px;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:.4rem;transition:var(--t)}.lo:hover{background:rgba(239,68,68,.1);border-color:var(--d)}
+.mmb{display:none;background:none;border:none;color:var(--lt);font-size:1.4rem;padding:.5rem}
+
+.ctn{max-width:1400px;margin:0 auto;padding:2rem}
+.hero{text-align:center;padding:2rem 2rem 1rem}
+.hero h1{font-size:2.8rem;margin-bottom:.8rem;background:linear-gradient(135deg,#fff,var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.1rem;color:var(--mt);max-width:600px;margin:0 auto 1.5rem}
+.cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+.btn{padding:.8rem 1.6rem;border:none;border-radius:var(--r);font-size:.95rem;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;transition:var(--t);text-decoration:none}
+.bp{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;box-shadow:0 4px 15px rgba(14,165,233,.3)}.bp:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,165,233,.5)}
+.bs{background:var(--gl);color:#fff;border:1px solid rgba(255,255,255,.15)}.bs:hover{background:rgba(255,255,255,.15)}
+.bd{background:linear-gradient(135deg,var(--d),#f97316);color:#fff}.bd:hover{transform:translateY(-2px)}
+.bgu{background:linear-gradient(135deg,var(--g),#059669);color:#fff}.bgu:hover{transform:translateY(-2px)}
+.ba{background:linear-gradient(135deg,var(--a),#d97706);color:#fff}.ba:hover{transform:translateY(-2px)}
+.bv{background:linear-gradient(135deg,var(--v),#6366f1);color:#fff}.bv:hover{transform:translateY(-2px)}
+.bsm{padding:.4rem .8rem;font-size:.85rem}
+.bi{padding:.5rem;width:36px;height:36px;justify-content:center}
+
+.sb{display:flex;justify-content:space-around;padding:1.5rem;background:rgba(0,0,0,.15);border-radius:16px;margin:1.5rem 0;flex-wrap:wrap;gap:.5rem}
+.si{text-align:center;padding:.8rem;border-radius:var(--r)}.sv{font-size:1.8rem;font-weight:800;color:var(--p)}.sl{color:var(--mt);font-size:.85rem}.ss{font-size:.65rem;color:var(--md);margin-top:.2rem;font-style:italic}
+
+/* AI Detection */
+.ai-det{background:linear-gradient(135deg,rgba(139,92,246,.06),rgba(14,165,233,.06));border:1px solid rgba(139,92,246,.2);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.ai-det::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(139,92,246,.04) 0%,transparent 60%);animation:aiP 6s ease-in-out infinite}
+@keyframes aiP{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.1)}}
+.ai-det h3{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;position:relative}
+.ai-badge{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:700;letter-spacing:.5px;animation:pd 2s infinite}
+.ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;position:relative}
+.ai-card{background:rgba(0,0,0,.2);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;transition:var(--t);cursor:pointer}.ai-card:hover{border-color:rgba(139,92,246,.4);transform:translateY(-2px)}
+.ai-card .ai-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.6rem}
+.ai-card h4{font-size:.9rem;margin-bottom:.3rem}.ai-card p{font-size:.78rem;color:var(--mt);line-height:1.4}
+.ai-card .ai-st{font-size:.7rem;margin-top:.5rem;display:flex;align-items:center;gap:.3rem}
+.ai-dot{width:6px;height:6px;border-radius:50%;animation:pd 2s infinite}.ai-dot.gn{background:var(--g)}.ai-dot.yw{background:var(--a)}.ai-dot.rd{background:var(--d)}.ai-dot.pu{background:#8b5cf6}
+
+.det-log{max-height:220px;overflow-y:auto;margin-top:.8rem}
+.det-entry{display:flex;align-items:flex-start;gap:.6rem;padding:.5rem;background:rgba(0,0,0,.12);border-radius:8px;margin-bottom:.4rem;font-size:.82rem;animation:fi .3s}
+.det-entry .de-i{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+.de-i.warn{background:rgba(245,158,11,.15);color:var(--a)}.de-i.danger{background:rgba(239,68,68,.15);color:var(--d)}.de-i.info{background:rgba(14,165,233,.15);color:var(--p)}.de-i.good{background:rgba(16,185,129,.15);color:var(--g)}
+.det-entry .de-t{font-size:.7rem;color:var(--md);margin-top:.1rem}
+
+/* Outbreaks */
+.oa{background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(245,158,11,.06));border:1px solid rgba(239,68,68,.2);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+.oi{display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;background:rgba(0,0,0,.15);border-radius:8px;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem;transition:var(--t)}.oi:hover{background:rgba(0,0,0,.25);transform:translateX(4px)}
+.osv{padding:.25rem .6rem;border-radius:10px;font-size:.75rem;font-weight:600}.sh2{background:rgba(239,68,68,.2);color:var(--d)}.sm2{background:rgba(245,158,11,.2);color:var(--a)}.slo{background:rgba(16,185,129,.2);color:var(--g)}
+.osrc{font-size:.7rem;color:var(--md);margin-top:.2rem}
+
+/* Cards */
+.dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem;margin-top:1.5rem}
+.card{background:rgba(30,41,59,.6);backdrop-filter:blur(10px);border:1px solid var(--bd);border-radius:20px;padding:1.5rem;transition:var(--t);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--p),var(--s));transform:scaleX(0);transition:transform .3s;transform-origin:left}
+.card:hover{transform:translateY(-4px);box-shadow:0 10px 40px rgba(0,0,0,.3)}.card:hover::before{transform:scaleX(1)}
+.ch{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem}
+.ci{width:46px;height:46px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:linear-gradient(135deg,var(--p),var(--s));flex-shrink:0}
+.card h3{font-size:1.2rem;color:#fff}
+.hm{background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(6,182,212,.08));border:1px solid rgba(14,165,233,.2)}
+
+.sd{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}
+.sdv{background:rgba(0,0,0,.25);padding:.8rem;border-radius:var(--r);text-align:center;border:1px solid var(--bd)}
+.sdv .vl{font-size:1.8rem;font-weight:800;color:var(--p);transition:color .3s}.sdv .lb{font-size:.8rem;color:var(--mt);margin-top:.3rem}
+.sdv.alt .vl{color:var(--d)}.sdv.wrn .vl{color:var(--a)}
+.sti{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:.4rem;animation:pd 2s infinite}.stn{background:var(--g)}.stw{background:var(--a)}.std{background:var(--d)}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Chat */
+.cc{height:380px;display:flex;flex-direction:column}
+.cm{flex:1;overflow-y:auto;padding:.8rem;background:rgba(0,0,0,.2);border-radius:var(--r);margin-bottom:.8rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth}
+.msg{max-width:80%;padding:.7rem 1rem;border-radius:var(--r);animation:fi .3s;font-size:.9rem;line-height:1.5}
+.mp{align-self:flex-end;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border-bottom-right-radius:4px}
+.md{align-self:flex-start;background:rgba(255,255,255,.08);border-bottom-left-radius:4px}
+.msg strong{font-size:.8rem;display:block;margin-bottom:.2rem;opacity:.8}
+.cin{display:flex;gap:.5rem}
+.cin input{flex:1;padding:.7rem 1rem;border:1px solid var(--gl);background:rgba(0,0,0,.2);color:#fff;border-radius:8px;outline:none}.cin input:focus{border-color:var(--p)}.cin input:disabled{opacity:.4;cursor:not-allowed}
+.ti{display:flex;gap:4px;padding:.7rem 1rem;align-self:flex-start}.td2{width:8px;height:8px;border-radius:50%;background:var(--mt);animation:tb 1.4s infinite}.td2:nth-child(2){animation-delay:.2s}.td2:nth-child(3){animation-delay:.4s}
+@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+
+/* Doctor List */
+.dl{display:flex;flex-direction:column;gap:.6rem;margin-top:.8rem;max-height:260px;overflow-y:auto}
+.di{display:flex;align-items:center;gap:.8rem;padding:.8rem;background:rgba(255,255,255,.03);border-radius:var(--r);cursor:pointer;transition:var(--t);border:1px solid transparent}.di:hover{background:rgba(255,255,255,.07);transform:translateX(4px)}.di.sel{background:rgba(14,165,233,.15);border-color:var(--p)}
+.dav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:linear-gradient(135deg,var(--p),var(--s));flex-shrink:0}
+.dif{flex:1;min-width:0}.dn{font-weight:600;color:#fff;font-size:.9rem}.ds{font-size:.8rem;color:var(--mt)}
+.dst{font-size:.75rem;padding:.2rem .5rem;border-radius:10px;white-space:nowrap}.dso{background:rgba(16,185,129,.15);color:var(--g)}
+.ndm{text-align:center;padding:2rem;color:var(--mt);font-size:.9rem}.ndm i{font-size:2.5rem;opacity:.3;display:block;margin-bottom:1rem}
+
+/* Consultation active state */
+.cons-active{border-color:var(--g)!important;box-shadow:0 0 25px rgba(16,185,129,.12)!important}.cons-active::before{transform:scaleX(1)!important;background:linear-gradient(90deg,var(--g),#059669)!important}
+
+.chc{position:relative;height:220px;margin-top:1rem}
+.fg{margin-bottom:.8rem}.fg label{display:block;margin-bottom:.4rem;color:var(--mt);font-size:.85rem}.fg input,.fg select,.fg textarea{width:100%;padding:.7rem;border:1px solid var(--gl);background:rgba(0,0,0,.2);color:#fff;border-radius:8px;outline:none;font-size:.9rem}.fg input:focus,.fg select:focus{border-color:var(--p)}
+
+.br{text-align:center;padding:1rem;background:rgba(0,0,0,.2);border-radius:var(--r);margin-top:.8rem;display:none}.bv2{font-size:2.2rem;font-weight:800}.bc{font-size:1rem;color:var(--mt)}
+.bb{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--a),var(--g),var(--a),var(--d));margin-top:.8rem;position:relative}.bm{position:absolute;top:-4px;width:16px;height:16px;background:#fff;border-radius:50%;border:3px solid var(--p);transition:left .5s ease;transform:translateX(-50%)}
+
+/* Symptoms */
+.stg{display:flex;flex-wrap:wrap;gap:.4rem;margin:.8rem 0}
+.st{padding:.35rem .7rem;background:rgba(255,255,255,.06);border:1px solid var(--gl);border-radius:20px;cursor:pointer;transition:var(--t);font-size:.85rem;user-select:none}.st:hover{background:rgba(14,165,233,.15)}.st.on{background:var(--p);border-color:var(--p);color:#fff}
+.sevi{display:flex;align-items:center;gap:.5rem;padding:.6rem .8rem;border-radius:8px;margin-bottom:.8rem;font-size:.85rem;font-weight:600}
+.sevi.crit{background:rgba(239,68,68,.15);color:var(--d);border-left:4px solid var(--d)}.sevi.hi{background:rgba(245,158,11,.15);color:var(--a);border-left:4px solid var(--a)}.sevi.mod{background:rgba(14,165,233,.1);color:var(--p);border-left:4px solid var(--p)}.sevi.lo{background:rgba(16,185,129,.15);color:var(--g);border-left:4px solid var(--g)}
+
+/* Meds */
+.ml{display:flex;flex-direction:column;gap:.6rem;margin-top:.8rem;max-height:300px;overflow-y:auto}
+.mi{display:flex;align-items:center;gap:.8rem;padding:.8rem;background:rgba(255,255,255,.03);border-radius:var(--r);transition:var(--t)}.mi:hover{background:rgba(255,255,255,.06)}.mi.tk{opacity:.6}.mi.tk .mn{text-decoration:line-through}
+.mc{width:22px;height:22px;border-radius:6px;border:2px solid var(--p);display:flex;align-items:center;justify-content:center;transition:var(--t);flex-shrink:0;background:none}.mc.ck{background:var(--g);border-color:var(--g)}.mc.ck::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;color:#fff;font-size:.7rem}
+.mf{flex:1;min-width:0}.mn{font-weight:600;color:#fff;font-size:.9rem}.md2{font-size:.8rem;color:var(--mt)}.mt2{font-size:.75rem;color:var(--a)}
+.ma{display:flex;gap:.3rem;flex-shrink:0}
+.iw2{padding:.8rem;margin:.5rem 0;border-radius:8px;background:rgba(239,68,68,.15);border-left:3px solid var(--d);font-size:.85rem;animation:fi .3s}.iw2.mod2{background:rgba(245,158,11,.15);border-left-color:var(--a)}
+
+/* Education */
+.eg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.8rem;margin-top:1rem}
+.ec{background:rgba(255,255,255,.03);border-radius:var(--r);padding:1.2rem;cursor:pointer;transition:var(--t);border:1px solid transparent}.ec:hover{background:rgba(255,255,255,.06);border-color:var(--p);transform:translateY(-3px)}
+.ec h4{color:var(--p);margin-bottom:.4rem;font-size:1rem}.ec p{font-size:.85rem;color:var(--mt)}
+.ed{margin-top:1rem;padding:1.5rem;background:rgba(0,0,0,.15);border-radius:var(--r);animation:fi .4s;border:1px solid var(--bd)}.ed h4{color:var(--p);margin-bottom:.8rem}.ed p{line-height:1.8;margin-bottom:.8rem;color:var(--mt)}.ed ul{margin-left:1.2rem;color:var(--mt);line-height:1.8}.ed li{margin-bottom:.3rem}.ed li strong{color:var(--lt)}
+
+/* Analysis */
+.sa{background:rgba(0,0,0,.2);border-radius:var(--r);margin-top:1rem;overflow:hidden}
+.sab{padding:1rem;max-height:0;overflow:hidden;transition:max-height .5s ease}.sab.op{max-height:8000px}
+.sas{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--bd)}.sas:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.sas h5{color:var(--p);margin-bottom:.5rem;font-size:.9rem}.sas p,.sas li{color:var(--mt);font-size:.85rem;line-height:1.6}.sas ul{margin-left:1rem}
+.srt{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--md);background:rgba(0,0,0,.2);padding:.2rem .5rem;border-radius:4px;margin-top:.3rem}.srt i{color:var(--p)}
+
+/* Doctor queue */
+.dpq{display:flex;flex-direction:column;gap:.6rem;max-height:340px;overflow-y:auto;margin-top:.8rem}
+.dpi{display:flex;align-items:center;gap:.8rem;padding:.8rem;background:rgba(255,255,255,.03);border-radius:var(--r);transition:var(--t);border:1px solid transparent}.dpi:hover{background:rgba(255,255,255,.06);border-color:var(--bd)}
+.dpav{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;background:linear-gradient(135deg,var(--p),var(--s));flex-shrink:0}
+.dpif{flex:1;min-width:0}.dpin{font-weight:600;font-size:.9rem}.dpic{font-size:.8rem;color:var(--mt)}.dpim{font-size:.75rem;color:var(--md);display:flex;gap:.6rem;margin-top:.2rem}
+
+/* Modals */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;visibility:hidden;transition:all .3s}.mo.on{opacity:1;visibility:visible}
+.mod{background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gl);border-radius:20px;padding:1.5rem;max-width:500px;width:90%;transform:scale(.9) translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto}.mo.on .mod{transform:scale(1) translateY(0)}
+.moh{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem}.moh h3{font-size:1.1rem}
+.mox{background:none;border:none;color:var(--mt);font-size:1.3rem;padding:.2rem}.mox:hover{color:#fff}
+
+/* Toasts */
+.tc{position:fixed;bottom:1.5rem;right:1.5rem;z-index:6000;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{color:#fff;padding:.8rem 1.2rem;border-radius:var(--r);box-shadow:0 4px 15px rgba(0,0,0,.3);animation:si .3s;display:flex;align-items:center;gap:.5rem;font-size:.9rem;pointer-events:auto;max-width:350px}
+.toast.tw{background:linear-gradient(135deg,var(--a),#d97706)}.toast.te{background:linear-gradient(135deg,var(--d),#f97316)}.toast.ts{background:linear-gradient(135deg,var(--p),var(--s))}.toast.tgu{background:linear-gradient(135deg,var(--g),#059669)}
+@keyframes si{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes so{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Bell */
+.bn{position:fixed;top:80px;right:20px;z-index:4000;background:linear-gradient(135deg,var(--a),#d97706);color:#fff;padding:1rem 1.5rem;border-radius:var(--r);box-shadow:0 8px 30px rgba(245,158,11,.4);animation:si .5s ease;display:none;max-width:320px}.bn.sh{display:flex;align-items:center;gap:1rem}
+.bn i{font-size:1.5rem}
+
+.ell{max-height:300px;overflow-y:auto;margin-top:1rem}
+.eli{display:flex;align-items:center;gap:.8rem;padding:.6rem;background:rgba(0,0,0,.15);border-radius:8px;margin-bottom:.4rem;font-size:.8rem}.eli i{color:var(--g)}.elt{color:var(--md);margin-left:auto;font-size:.75rem}
+
+.fi2{padding:.8rem 1rem;background:rgba(255,255,255,.03);border-radius:var(--r);transition:var(--t)}.fi2:hover{background:rgba(255,255,255,.06)}
+.spn{width:36px;height:36px;border:3px solid rgba(255,255,255,.1);border-left-color:var(--p);border-radius:50%;animation:sp .8s linear infinite;margin:1rem auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+footer{background:rgba(15,23,42,.9);border-top:1px solid var(--bd);padding:2.5rem 2rem 1.5rem;margin-top:3rem}
+.fc{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem)}
+.fs h4{color:var(--p);margin-bottom:.8rem}.fs p,.fs a{color:var(--mt);text-decoration:none;line-height:1.8;font-size:.85rem}.fs a:hover{color:var(--p)}
+.fb{max-width:1400px;margin:1.5rem auto 0;padding-top:1rem;border-top:1px solid var(--bd);text-align:center;color:var(--md);font-size:.8rem}
+
+@media(max-width:768px){.hero h1{font-size:2rem}.nl{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(15,23,42,.95);flex-direction:column;padding:1rem;gap:.3rem;border-bottom:1px solid var(--bd)}.nl.op{display:flex}.nr .ui{display:none}.mmb{display:block}.sd{grid-template-columns:1fr}.dash{grid-template-columns:1fr}.card{grid-column:span 1!important}.cg{grid-template-columns:1fr!important}.mfg{grid-template-columns:1fr!important}.auth-card{padding:1.5rem}.ai-grid{grid-template-columns:1fr 1fr}.bn{right:10px;left:10px;max-width:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:rgba(0,0,0,.1)}::-webkit-scrollbar-thumb{background:rgba(14,165,233,.4);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="tc" id="tc"></div>
+
+<!-- Bell -->
+<div class="bn" id="bell">
+    <i class="fa-solid fa-bell"></i>
+    <div><strong id="bellT"></strong><p id="bellM" style="font-size:.85rem;margin-top:.2rem"></p></div>
+    <button id="bellClose" style="background:none;border:none;color:#fff;cursor:pointer;margin-left:auto;font-size:1.2rem">&times;</button>
+</div>
+
+<!-- AUTH -->
+<div class="auth" id="authS">
+    <div class="auth-orb" style="width:300px;height:300px;background:rgba(14,165,233,.15);top:10%;left:10%;position:absolute"></div>
+    <div class="auth-orb" style="width:250px;height:250px;background:rgba(6,182,212,.1);bottom:15%;right:10%;position:absolute;animation-delay:2s"></div>
+    <div class="auth-box"><div class="auth-card">
+        <div class="auth-logo"><div class="li"><i class="fa-solid fa-heart-pulse"></i></div><h1>MediConnect Pro</h1><p>AI-Powered Healthcare Platform</p></div>
+        <div class="rtabs"><button class="rtab on" id="tabP"><i class="fa-solid fa-user"></i> Patient</button><button class="rtab" id="tabD"><i class="fa-solid fa-user-doctor"></i> Doctor</button></div>
+
+        <!-- Patient Login -->
+        <div class="af on" id="f-pl">
+            <div class="ig" id="g-pe"><label>Email</label><div class="iw"><input type="email" id="i-pe" placeholder="patient@example.com"><i class="fa-solid fa-envelope ii"></i></div><div class="ie">Valid email required</div></div>
+            <div class="ig" id="g-pp"><label>Password</label><div class="iw"><input type="password" id="i-pp" placeholder="Password"><i class="fa-solid fa-lock ii"></i><button class="tpw" type="button" data-pw="i-pp"><i class="fa-solid fa-eye"></i></button></div><div class="ie">Password required</div></div>
+            <label class="arm"><input type="checkbox" checked> Remember me</label>
+            <button class="abtn abp" id="btnLP"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+            <div class="asw">No account? <a id="lkPR">Create one</a></div>
+            <div class="dacc"><h4><i class="fa-solid fa-flask"></i> Demo</h4><div class="dai"><span>Patient</span><code id="fdP">patient@demo.com / demo123</code></div></div>
+        </div>
+
+        <!-- Patient Register -->
+        <div class="af" id="f-pr">
+            <div class="ig" id="g-pn"><label>Full Name</label><div class="iw"><input type="text" id="i-pn" placeholder="John Doe"><i class="fa-solid fa-user ii"></i></div><div class="ie">Required</div></div>
+            <div class="ig" id="g-pre"><label>Email</label><div class="iw"><input type="email" id="i-pre" placeholder="patient@example.com"><i class="fa-solid fa-envelope ii"></i></div><div class="ie">Valid email required</div></div>
+            <div class="ig" id="g-prp"><label>Password</label><div class="iw"><input type="password" id="i-prp" placeholder="Min 6 chars"><i class="fa-solid fa-lock ii"></i><button class="tpw" type="button" data-pw="i-prp"><i class="fa-solid fa-eye"></i></button></div><div class="ie">Min 6 characters</div></div>
+            <div class="ig" id="g-prp2"><label>Confirm Password</label><div class="iw"><input type="password" id="i-prp2" placeholder="Re-enter"><i class="fa-solid fa-lock ii"></i></div><div class="ie">No match</div></div>
+            <div class="ig"><label>Date of Birth</label><div class="iw"><input type="date" id="i-pdob"><i class="fa-solid fa-calendar ii"></i></div></div>
+            <button class="abtn abp" id="btnRP"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            <div class="asw">Have account? <a id="lkPL">Sign In</a></div>
+        </div>
+
+        <!-- Doctor Login -->
+        <div class="af" id="f-dl">
+            <div class="ig" id="g-dlid"><label>License ID</label><div class="iw"><input type="text" id="i-dlid" placeholder="MED-2024-00847"><i class="fa-solid fa-id-card ii"></i></div><div class="ie">Required</div></div>
+            <div class="ig" id="g-dle"><label>Email</label><div class="iw"><input type="email" id="i-dle" placeholder="doctor@hospital.com"><i class="fa-solid fa-envelope ii"></i></div><div class="ie">Valid email required</div></div>
+            <div class="ig" id="g-dlp"><label>Password</label><div class="iw"><input type="password" id="i-dlp" placeholder="Password"><i class="fa-solid fa-lock ii"></i><button class="tpw" type="button" data-pw="i-dlp"><i class="fa-solid fa-eye"></i></button></div><div class="ie">Required</div></div>
+            <label class="arm"><input type="checkbox" checked> Remember me</label>
+            <button class="abtn abp" id="btnLD"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+            <div class="asw">New doctor? <a id="lkDR">Register</a></div>
+            <div class="dacc"><h4><i class="fa-solid fa-flask"></i> Demo</h4><div class="dai"><span>Doctor</span><code id="fdD">doctor@demo.com / demo123</code></div></div>
+        </div>
+
+        <!-- Doctor Register -->
+        <div class="af" id="f-dr">
+            <div class="ig" id="g-drn"><label>Full Name</label><div class="iw"><input type="text" id="i-drn" placeholder="Dr. Sarah Chen"><i class="fa-solid fa-user-doctor ii"></i></div><div class="ie">Required</div></div>
+            <div class="ig" id="g-dre"><label>Email</label><div class="iw"><input type="email" id="i-dre" placeholder="doctor@hospital.com"><i class="fa-solid fa-envelope ii"></i></div><div class="ie">Valid email required</div></div>
+            <div class="ig" id="g-drid"><label>License ID</label><div class="iw"><input type="text" id="i-drid" placeholder="MED-XXXX-XXXXX"><i class="fa-solid fa-id-card ii"></i></div><div class="ie">Required</div></div>
+            <div class="ig"><label>Specialty</label><div class="iw"><select id="i-dspec"><option value="">Select</option><option>Cardiology</option><option>General Physician</option><option>Pediatrics</option><option>Dermatology</option><option>Neurology</option><option>Orthopedics</option><option>Oncology</option><option>Psychiatry</option><option>Surgery</option></select><i class="fa-solid fa-stethoscope ii"></i></div></div>
+            <div class="ig" id="g-drp"><label>Password</label><div class="iw"><input type="password" id="i-drp" placeholder="Min 6 chars"><i class="fa-solid fa-lock ii"></i><button class="tpw" type="button" data-pw="i-drp"><i class="fa-solid fa-eye"></i></button></div><div class="ie">Min 6 characters</div></div>
+            <div class="ig" id="g-drp2"><label>Confirm Password</label><div class="iw"><input type="password" id="i-drp2" placeholder="Re-enter"><i class="fa-solid fa-lock ii"></i></div><div class="ie">No match</div></div>
+            <button class="abtn abp" id="btnRD"><i class="fa-solid fa-user-plus"></i> Register</button>
+            <div class="asw">Have account? <a id="lkDL">Sign In</a></div>
+        </div>
+    </div></div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appW">
+    <div class="bga"></div>
+    <nav><div class="nc">
+        <div class="logo" id="logoBtn"><i class="fa-solid fa-heart-pulse"></i> MediConnect Pro</div>
+        <button class="mmb" id="mmbBtn" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+        <ul class="nl" id="navL">
+            <li><a href="#" class="on" data-nav="dash">Dashboard</a></li>
+            <li><a href="#" data-nav="consult" id="navC">Consultation</a></li>
+            <li><a href="#" data-nav="health">Health</a></li>
+            <li><a href="#" data-nav="ai">AI Detection</a></li>
+            <li><a href="#" data-nav="outb">Outbreaks</a></li>
+        </ul>
+        <div class="nr">
+            <div class="up" id="profBtn" tabindex="0"><div class="ua" id="navAv">?</div><div class="ui"><div class="un" id="navNm">User</div><div class="ur" id="navRl">Role</div></div></div>
+            <button class="lo" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+    </div></nav>
+    <main class="ctn" id="mainC"></main>
+    <footer><div class="fc">
+        <div class="fs"><h4><i class="fa-solid fa-heart-pulse"></i> MediConnect Pro</h4><p>AI-powered healthcare with real-time detection.</p></div>
+        <div class="fs"><h4>Services</h4><p>AI Symptom Detection</p><p>Live Consultation</p><p>Health Monitoring</p></div>
+        <div class="fs"><h4>Contact</h4><p>support@mediconnect.pro</p><p>+1 (800) 123-4567</p></div>
+    </div><div class="fb">&copy; 2026 MediConnect Pro</div></footer>
+</div>
+
+<!-- Profile Modal -->
+<div class="mo" id="profM"><div class="mod"><div class="moh"><h3><i class="fa-solid fa-user-circle"></i> Profile</h3><button class="mox" data-close="profM">&times;</button></div><div id="profC"></div></div></div>
+<!-- Appointment Modal -->
+<div class="mo" id="apptM"><div class="mod"><div class="moh"><h3><i class="fa-solid fa-calendar-check"></i> Book Appointment</h3><button class="mox" data-close="apptM">&times;</button></div>
+    <form id="apptForm">
+        <div class="fg"><label>Doctor</label><select id="a-doc" required><option value="">Select</option></select></div>
+        <div class="fg"><label>Your Email</label><input type="email" id="a-email" required placeholder="your@email.com"></div>
+        <div class="fg"><label>Date</label><input type="date" id="a-date" required></div>
+        <div class="fg"><label>Time</label><select id="a-time" required><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option></select></div>
+        <div class="fg"><label>Reason</label><textarea id="a-reason" placeholder="Describe symptoms..." rows="3"></textarea></div>
+        <button type="submit" class="btn bp" style="width:100%;justify-content:center"><i class="fa-solid fa-check"></i> Book Appointment</button>
+    </form>
+</div></div>
+<!-- Confirm Modal -->
+<div class="mo" id="cfM"><div class="mod" style="max-width:400px"><div class="moh"><h3><i class="fa-solid fa-circle-question" style="color:var(--a)"></i> Confirm</h3><button class="mox" data-close="cfM">&times;</button></div><p id="cfMsg" style="color:var(--mt);line-height:1.6"></p><div style="display:flex;gap:.8rem;margin-top:1.2rem"><button class="btn bs" style="flex:1;justify-content:center" id="cfCancel">Cancel</button><button class="btn bd" style="flex:1;justify-content:center" id="cfBtn">Confirm</button></div></div></div>
+<!-- Email Modal -->
+<div class="mo" id="emlM"><div class="mod"><div class="moh"><h3><i class="fa-solid fa-envelope"></i> Email Notifications</h3><button class="mox" data-close="emlM">&times;</button></div><p style="color:var(--mt);font-size:.85rem;margin-bottom:1rem">Simulated emails for demo.</p><div class="ell" id="emlC"></div></div></div>
+<!-- AI Detail Modal -->
+<div class="mo" id="aiDM"><div class="mod"><div class="moh"><h3><i class="fa-solid fa-brain" style="color:#8b5cf6"></i> <span id="aiDT">AI Detection</span></h3><button class="mox" data-close="aiDM">&times;</button></div><div id="aiDC"></div></div></div>
+
+<script>
+/* ===== CORE HELPERS ===== */
+function san(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function vE(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
+function toast(m,ic,t){
+    ic=ic||'fa-check-circle';t=t||'ts';
+    var c=document.getElementById('tc'),el=document.createElement('div');
+    el.className='toast '+t;el.innerHTML='<i class="fa-solid '+ic+'"></i> '+san(m);
+    c.appendChild(el);setTimeout(function(){el.style.animation='so .3s ease forwards';setTimeout(function(){el.remove()},300)},3500);
+}
+function openM(id){document.getElementById(id).classList.add('on')}
+function closeM(id){document.getElementById(id).classList.remove('on')}
+function clrE(ids){ids.forEach(function(id){var g=document.getElementById(id);if(g)g.classList.remove('err')})}
+function setE(id){document.getElementById(id).classList.add('err')}
+function showF(id){document.querySelectorAll('.af').forEach(function(f){f.classList.remove('on')});document.getElementById(id).classList.add('on')}
+
+function confirmF(msg,cb,btnTxt,btnCls){
+    document.getElementById('cfMsg').textContent=msg;
+    var b=document.getElementById('cfBtn');b.className='btn '+(btnCls||'bd');b.style.cssText='flex:1;justify-content:center';b.textContent=btnTxt||'Confirm';
+    b.onclick=function(){closeM('cfM');cb()};openM('cfM');
+}
+
+/* ===== STATE ===== */
+var CU=null,selDoc=null,hChart=null,tChart=null,monInt=null,medInt=null;
+var hData={hr:[],lb:[]},meds=[],editIdx=null,selSyms=new Set();
+var emailLog=[],detLog=[];
+
+/* ===== STORAGE ===== */
+function S(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function G(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function getP(){return G('mc_pat')||[]}
+function getD(){return G('mc_doc')||[]}
+function getA(){return G('mc_appts')||[]}
+function getSt(){return G('mc_stats')||{helped:0,detections:0,respTime:0,consCount:0}}
+function onDocs(){var ds=getD(),n=Date.now();return ds.filter(function(d){return d.loginTime&&(n-d.loginTime)<3e6})}
+function onPats(){var ps=getP(),n=Date.now();return ps.filter(function(p){return p.loginTime&&(n-p.loginTime)<36e5})}
+
+function sendEmail(to,subj,body){
+    emailLog.push({to:subj,body,ts:new Date().toISOString(),subj:subj,type:subj.indexOf('Reminder')>-1?'reminder':'confirm'});
+    S('mc_emails',emailLog);toast('Email sent!','fa-envelope','ts');
+}
+function addDet(type,icon,title,desc){detLog.unshift({type:type,icon:icon,title:title,desc:desc,time:new Date().toLocaleTimeString()});if(detLog.length>30)detLog.pop()}
+
+/* ===== MEDICAL DATA ===== */
+var MKB={
+fever:{def:'Body temperature above 37.5C',nr:'36.1-37.2C',wc:'Above 39.4C or >3 days',causes:['Viral infections','Bacterial infections','Inflammatory conditions','Heat exhaustion'],src:'Mayo Clinic 2024',url:'https://www.mayoclinic.org/'},
+cough:{def:'Forceful expulsion of air from lungs',wc:'Coughing blood, >8 weeks, difficulty breathing',causes:['Respiratory infections','Asthma','GERD','Pneumonia','COVID-19'],src:'American Lung Association 2024',url:'https://www.lung.org/'},
+headache:{def:'Pain in any region of the head',wc:'Sudden severe onset, with fever/stiff neck',causes:['Tension','Migraine','Cluster','Sinus','Dehydration'],src:'NIH NINDS 2024',url:'https://www.ninds.nih.gov/'},
+'chest pain':{def:'Pain or discomfort in chest area',wc:'Crushing pain, radiating to arm/jaw, sweating',causes:['Cardiac (angina, MI)','Pulmonary embolism','GERD','Musculoskeletal','Anxiety'],rf:['Radiating to left arm/jaw','Associated with sweating','Shortness of breath'],src:'AHA 2024',url:'https://www.heart.org/'},
+'shortness of breath':{def:'Difficulty breathing or not getting enough air',wc:'At rest, sudden onset, with chest pain',causes:['Asthma','COPD','Pneumonia','Heart failure','Anxiety'],src:'Cleveland Clinic 2024',url:'https://my.clevelandclinic.org/'},
+fatigue:{def:'Persistent tiredness not relieved by rest',wc:'>2 weeks, unexplained weight loss',causes:['Sleep disorders','Anemia','Thyroid disorders','Depression'],src:'NIH 2024',url:'https://www.nia.nih.gov/'},
+nausea:{def:'Unpleasant sensation of needing to vomit',wc:'Severe abdominal pain, blood in vomit',causes:['Gastroenteritis','Food poisoning','Medication side effects','Pregnancy'],src:'Mayo Clinic 2024',url:'https://www.mayoclinic.org/'},
+dizziness:{def:'Unsteadiness, lightheadedness, or vertigo',wc:'With fainting, chest pain, sudden onset',causes:['Dehydration','Orthostatic hypotension','Inner ear disorders','Anemia'],src:'Merck Manual 2024',url:'https://www.merckmanuals.com/'},
+'sore throat':{def:'Pain or irritation of throat',wc:'Difficulty swallowing, >1 week, rash',causes:['Viral pharyngitis','Strep throat','Allergies','GERD'],src:'CDC 2024',url:'https://www.cdc.gov/'},
+'body ache':{def:'Widespread muscle pain',wc:'With fever, rash, joint swelling',causes:['Viral infections','Fibromyalgia','Overexertion','Autoimmune'],src:'Mayo Clinic 2024',url:'https://www.mayoclinic.org/'},
+'loss of taste':{def:'Inability to detect flavors',wc:'Sudden onset with neurological symptoms',causes:['COVID-19','Upper respiratory infections','Zinc deficiency'],src:'NIH NIDCD 2024',url:'https://www.nidcd.nih.gov/'},
+'runny nose':{def:'Excess nasal discharge',wc:'With facial pain, discharge >10 days',causes:['Common cold','Allergies','Sinusitis'],src:'AAO-HNS 2024',url:'https://www.enthealth.org/'}
+};
+
+var CONDS={
+covid:{name:'COVID-19',syms:['fever','cough','loss of taste','fatigue','shortness of breath'],src:'WHO 2024',url:'https://www.who.int/'},
+flu:{name:'Influenza',syms:['fever','cough','body ache','fatigue','headache'],src:'CDC 2024',url:'https://www.cdc.gov/flu/'},
+cold:{name:'Common Cold',syms:['runny nose','sore throat','cough','fatigue'],src:'Mayo Clinic 2024',url:'https://www.mayoclinic.org/'},
+migraine:{name:'Migraine',syms:['headache','nausea','dizziness','fatigue'],src:'AMF 2024',url:'https://americanmigrainefoundation.org/'},
+cardiac:{name:'Cardiac Emergency',syms:['chest pain','shortness of breath','dizziness','nausea'],src:'AHA 2024',url:'https://www.heart.org/'},
+gastro:{name:'Gastroenteritis',syms:['nausea','fatigue','body ache','fever'],src:'Mayo Clinic 2024',url:'https://www.mayoclinic.org/'}
+};
+
+var OUTB=[
+{d:'Influenza A (H3N2)',l:'North America',s:'moderate',c:'12,450',upd:'2024-12-15',src:'CDC FluView',url:'https://www.cdc.gov/flu/weekly/'},
+{d:'Dengue Fever',l:'Southeast Asia',s:'high',c:'45,200',upd:'2024-12-14',src:'WHO Surveillance',url:'https://www.who.int/'},
+{d:'COVID-19 XBB.1.5',l:'Global',s:'low',c:'8,900',upd:'2024-12-13',src:'WHO Dashboard',url:'https://covid19.who.int/'},
+{d:'Measles',l:'Europe',s:'moderate',c:'3,100',upd:'2024-12-12',src:'ECDC',url:'https://www.ecdc.europa.eu/'}
+];
+
+var DRUG_I=[
+{d1:'warfarin',d2:'aspirin',s:'high',m:'Increased bleeding risk (FDA)'},
+{d1:'metformin',d2:'alcohol',s:'high',m:'Lactic acidosis risk (NIH)'},
+{d1:'ibuprofen',d2:'aspirin',s:'moderate',m:'Reduced cardioprotective effect (FDA)'},
+{d1:'paracetamol',d2:'alcohol',s:'high',m:'Severe liver damage (LiverTox)'}
+];
+
+var ARTS={
+nutrition:{t:'Balanced Nutrition',i:'fa-apple-whole',c:'<h4>Balanced Nutrition</h4><ul><li><strong>Carbs:</strong> Whole grains, fruits — 45-65% daily</li><li><strong>Proteins:</strong> Fish, eggs, beans — 10-35%</li><li><strong>Fats:</strong> Avocado, olive oil — 20-35%</li><li><strong>Water:</strong> 2L+ daily</li><li><strong>Fiber:</strong> 25-30g daily</li></ul><p><em>Source: USDA Dietary Guidelines 2020-2025</em></p>'},
+exercise:{t:'Exercise Guidelines',i:'fa-person-running',c:'<h4>Physical Activity</h4><ul><li><strong>Adults 18-64:</strong> 150 min moderate/week</li><li><strong>Children 6-17:</strong> 60 min daily</li><li><strong>Older Adults 65+:</strong> Same + balance 3x/week</li><li><strong>Strength:</strong> 2+ days/week all ages</li></ul><p><em>Source: WHO Physical Activity Guidelines 2020</em></p>'},
+mental:{t:'Mental Health',i:'fa-brain',c:'<h4>Mental Wellness</h4><ul><li><strong>Stress:</strong> Chronic linked to cardiovascular disease</li><li><strong>Anxiety:</strong> Affects 284M worldwide</li><li><strong>Depression:</strong> Leading cause of disability</li><li><strong>Sleep:</strong> 7-9 hours critical</li></ul><p><em>Source: NIMH, WHO 2022</em></p>'},
+prevention:{t:'Disease Prevention',i:'fa-shield-virus',c:'<h4>Preventive Healthcare</h4><ul><li><strong>Annual:</strong> Flu vaccine, checkup</li><li><strong>Every 10yr:</strong> Tdap booster</li><li><strong>50+:</strong> Shingles vaccine, colorectal screening</li><li><strong>65+:</strong> Pneumococcal vaccines</li></ul><p><em>Source: CDC Immunization Schedule 2024</em></p>'}
+};
+
+var FACS=[
+{name:'City General Hospital',dist:'2.3 km',type:'Emergency Room',icon:'fa-hospital'},
+{name:'MediCare Clinic',dist:'0.8 km',type:'Walk-in',icon:'fa-clinic-medical'},
+{name:'24/7 Pharmacy Plus',dist:'1.5 km',type:'Open Now',icon:'fa-prescription-bottle-medical'}
+];
+
+/* ===== SOUND ===== */
+var aCtx=null;
+function playBell(){try{if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();[[830,600,.8,1.5,0],[1100,800,.6,1.2,.3]].forEach(function(p){setTimeout(function(){var o=aCtx.createOscillator(),g=aCtx.createGain();o.connect(g);g.connect(aCtx.destination);o.type='sine';o.frequency.setValueAtTime(p[0],aCtx.currentTime);o.frequency.exponentialRampToValueAtTime(p[1],aCtx.currentTime+.5);g.gain.setValueAtTime(p[2],aCtx.currentTime);g.gain.exponentialRampToValueAtTime(.01,aCtx.currentTime+p[3]);o.start(aCtx.currentTime);o.stop(aCtx.currentTime+p[3])},p[4]*1000)})}catch(e){}}
+
+/* ===== AUTH ===== */
+function doLogin(role){
+    if(role==='patient'){
+        clrE(['g-pe','g-pp']);var em=document.getElementById('i-pe').value.trim(),pw=document.getElementById('i-pp').value,ok=true;
+        if(!vE(em)){setE('g-pe');ok=false}if(!pw){setE('g-pp');ok=false}if(!ok)return;
+        var ps=getP(),u=ps.find(function(p){return p.email===em&&p.password===pw});
+        if(!u){toast('Invalid credentials','fa-circle-xmark','te');return}
+        CU=Object.assign({},u);CU.loginTime=Date.now();var idx=ps.findIndex(function(p){return p.email===em});if(idx!==-1){ps[idx].loginTime=Date.now();S('mc_pat',ps)}
+        S('mc_session',CU);enterApp();
+    }else{
+        clrE(['g-dlid','g-dle','g-dlp']);var lid=document.getElementById('i-dlid').value.trim(),em2=document.getElementById('i-dle').value.trim(),pw2=document.getElementById('i-dlp').value,ok2=true;
+        if(!lid){setE('g-dlid');ok2=false}if(!vE(em2)){setE('g-dle');ok2=false}if(!pw2){setE('g-dlp');ok2=false}if(!ok2)return;
+        var ds=getD(),u2=ds.find(function(d){return d.licenseId===lid&&d.email===em2&&d.password===pw2});
+        if(!u2){toast('Invalid credentials','fa-circle-xmark','te');return}
+        CU=Object.assign({},u2);CU.loginTime=Date.now();CU.status='online';var idx2=ds.findIndex(function(d){return d.email===em2});if(idx2!==-1){ds[idx2].loginTime=Date.now();ds[idx2].status='online';S('mc_doc',ds)}
+        S('mc_session',CU);enterApp();
+    }
+}
+
+function doReg(role){
+    if(role==='patient'){
+        clrE(['g-pn','g-pre','g-prp','g-prp2']);var nm=document.getElementById('i-pn').value.trim(),em=document.getElementById('i-pre').value.trim(),pw=document.getElementById('i-prp').value,pw2=document.getElementById('i-prp2').value,dob=document.getElementById('i-pdob').value,ok=true;
+        if(!nm){setE('g-pn');ok=false}if(!vE(em)){setE('g-pre');ok=false}if(pw.length<6){setE('g-prp');ok=false}if(pw!==pw2){setE('g-prp2');ok=false}if(!ok)return;
+        var ps=getP();if(ps.find(function(p){return p.email===em})){toast('Email taken','fa-circle-xmark','te');return}
+        var u={id:'p'+Date.now(),name:nm,email:em,password:pw,dob:dob,role:'patient',loginTime:Date.now()};
+        ps.push(u);S('mc_pat',ps);CU=Object.assign({},u);S('mc_session',CU);enterApp();
+    }else{
+        clrE(['g-drn','g-dre','g-drid','g-drp','g-drp2']);var nm2=document.getElementById('i-drn').value.trim(),em2=document.getElementById('i-dre').value.trim(),lid=document.getElementById('i-drid').value.trim(),spec=document.getElementById('i-dspec').value,pw3=document.getElementById('i-drp').value,pw4=document.getElementById('i-drp2').value,ok2=true;
+        if(!nm2){setE('g-drn');ok2=false}if(!vE(em2)){setE('g-dre');ok2=false}if(!lid){setE('g-drid');ok2=false}if(!spec){toast('Select specialty','fa-triangle-exclamation','tw');ok2=false}if(pw3.length<6){setE('g-drp');ok2=false}if(pw3!==pw4){setE('g-drp2');ok2=false}if(!ok2)return;
+        var ds2=getD();if(ds2.find(function(d){return d.email===em2||d.licenseId===lid})){toast('Email or License taken','fa-circle-xmark','te');return}
+        var u2={id:'d'+Date.now(),name:nm2,email:em2,licenseId:lid,specialty:spec,password:pw3,status:'online',role:'doctor',loginTime:Date.now(),cons:0};
+        ds2.push(u2);S('mc_doc',ds2);CU=Object.assign({},u2);S('mc_session',CU);enterApp();
+    }
+}
+
+function doLogout(){
+    confirmF('Sign out?',function(){
+        if(CU.role==='doctor'){var ds=getD(),i=ds.findIndex(function(d){return d.id===CU.id});if(i!==-1){ds[i].status='offline';ds[i].loginTime=null;S('mc_doc',ds)}}
+        else{var ps=getP(),i=ps.findIndex(function(p){return p.id===CU.id});if(i!==-1){ps[i].loginTime=null;S('mc_pat',ps)}}
+        if(monInt)clearInterval(monInt);if(medInt)clearInterval(medInt);if(hChart){hChart.destroy();hChart=null}if(tChart){tChart.destroy();tChart=null}
+        CU=null;meds=[];selSyms=new Set();selDoc=null;detLog=[];localStorage.removeItem('mc_session');
+        document.getElementById('authS').classList.remove('hide');document.getElementById('appW').classList.remove('vis');showF('f-pl');swRole('patient');toast('Signed out','fa-right-from-bracket','ts');
+    },'Sign Out','bd');
+}
+
+function swRole(r){
+    document.querySelectorAll('.rtab').forEach(function(t){t.classList.remove('on')});
+    document.getElementById(r==='patient'?'tabP':'tabD').classList.add('on');
+    showF(r==='patient'?'f-pl':'f-dl');
+}
+
+/* ===== ENTER APP ===== */
+function enterApp(){
+    emailLog=G('mc_emails')||[];
+    document.getElementById('authS').classList.add('hide');document.getElementById('appW').classList.add('vis');
+    var ini=CU.name.split(' ').map(function(w){return w[0]}).join('').toUpperCase().slice(0,2);
+    document.getElementById('navAv').className='ua '+(CU.role==='doctor'?'da':'pa');document.getElementById('navAv').textContent=ini;
+    document.getElementById('navNm').textContent=CU.name;document.getElementById('navRl').textContent=CU.role==='doctor'?(CU.specialty||'Doctor'):'Patient';
+    document.getElementById('navC').style.display=CU.role==='doctor'?'none':'';
+    meds=G('mc_meds_'+CU.id)||[];
+    if(CU.role==='doctor')renderDocDash();else renderPatDash();
+    startMedRem();setTimeout(function(){toast('Welcome, '+CU.name+'!','fa-hand','tgu')},500);
+}
+
+function startMedRem(){
+    if(medInt)clearInterval(medInt);
+    medInt=setInterval(function(){
+        var now=new Date(),ct=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+        meds.forEach(function(m){if(!m.taken&&m.time===ct){playBell();document.getElementById('bellT').textContent='Medication Reminder';document.getElementById('bellM').textContent='Take '+m.name+' ('+m.dose+') now';document.getElementById('bell').classList.add('sh');setTimeout(function(){document.getElementById('bell').classList.remove('sh')},30000);toast('Time to take '+m.name+'!','fa-bell','tw');addDet('warn','fa-pills','Medication Reminder','Take '+m.name+' ('+m.dose+')');updateDetLog()}});
+    },60000);
+}
+
+/* ===== PATIENT DASHBOARD ===== */
+function renderPatDash(){
+    var od=onDocs(),st=getSt(),avT=st.consCount>0?(st.respTime/st.consCount).toFixed(1):'0.0';
+    document.getElementById('mainC').innerHTML=
+    '<section class="hero"><h1>AI-Powered Healthcare</h1><p>Real-time detection, live consultation, intelligent monitoring.</p><div class="cta"><button class="btn bp" id="hCB"><i class="fa-solid fa-stethoscope"></i> Start Consultation</button><button class="btn bv" id="hAB"><i class="fa-solid fa-brain"></i> AI Detection</button><button class="btn bs" id="hHB"><i class="fa-solid fa-heart-pulse"></i> Vitals</button><button class="btn ba" id="hBB"><i class="fa-solid fa-calendar-check"></i> Book</button></div></section>'+
+    '<div class="sb"><div class="si"><div class="sv">'+od.length+'</div><div class="sl">Doctors Online</div><div class="ss">Source: Active sessions</div></div><div class="si"><div class="sv">'+st.helped+'</div><div class="sl">Patients Helped</div><div class="ss">Completed consultations</div></div><div class="si"><div class="sv">'+st.detections+'%</div><div class="sl">AI Detections</div><div class="ss">AI analysis engine</div></div><div class="si"><div class="sv">'+avT+'min</div><div class="sl">Avg Response</div><div class="ss">Consultation timestamps</div></div></div>'+
+
+    /* AI PANEL */
+    '<div class="ai-det" id="aiPanel"><h3><i class="fa-solid fa-brain" style="color:#8b5cf6"></i> AI Health Detection <span class="ai-badge">LIVE</span></h3><div class="ai-grid">'+
+    '<div class="ai-card" id="aiAnom"><div class="ai-icon" style="background:rgba(139,92,246,.15);color:#8b5cf6"><i class="fa-solid fa-triangle-exclamation"></i></div><h4>Anomaly Detection</h4><p>Real-time vital sign analysis for irregular patterns</p><div class="ai-st"><span class="ai-dot pu"></span> <span style="color:var(--md)">Idle</span></div></div>'+
+    '<div class="ai-card" id="aiPat"><div class="ai-icon" style="background:rgba(14,165,233,.15);color:var(--p)"><i class="fa-solid fa-chart-line"></i></div><h4>Pattern Recognition</h4><p>Detects symptom clusters and health trend deviations</p><div class="ai-st"><span class="ai-dot gn"></span> <span style="color:var(--md)">Ready</span></div></div>'+
+    '<div class="ai-card" id="aiInt"><div class="ai-icon" style="background:rgba(239,68,68,.15);color:var(--d)"><i class="fa-solid fa-pills"></i></div><h4>Drug Interaction</h4><p>Automatic medication conflict detection</p><div class="ai-st"><span class="ai-dot gn"></span> <span style="color:var(--md)">Monitoring</span></div></div>'+
+    '<div class="ai-card" id="aiOut"><div class="ai-icon" style="background:rgba(245,158,11,.15);color:var(--a)"><i class="fa-solid fa-virus"></i></div><h4>Outbreak Alert</h4><p>WHO/CDC surveillance for your region</p><div class="ai-st"><span class="ai-dot yw"></span> <span style="color:var(--md)">2 alerts</span></div></div>'+
+    '</div><div class="det-log" id="detLog"><div style="text-align:center;color:var(--md);padding:1rem;font-size:.85rem"><i class="fa-solid fa-brain" style="opacity:.3;font-size:1.5rem;display:block;margin-bottom:.5rem"></i>AI detection log active when monitoring starts</div></div></div>'+
+
+    '<div class="oa" id="outb"><h3 style="margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem"><i class="fa-solid fa-triangle-exclamation" style="color:var(--d)"></i> Active Outbreaks <span style="font-size:.7rem;color:var(--md);margin-left:auto">WHO/CDC</span></h3><div id="obList"><div class="spn"></div></div></div>'+
+
+    '<div class="dash">'+
+    /* CONSULTATION - ALWAYS ACTIVE */
+    '<div class="card" id="consult" style="grid-column:span 2"><div class="ch"><div class="ci" style="background:linear-gradient(135deg,var(--g),#059669)"><i class="fa-solid fa-user-doctor"></i></div><div><h3>Live Doctor Consultation</h3><small style="color:var(--g)"><i class="fa-solid fa-circle" style="font-size:.5rem"></i> '+od.length+' online — Ready</small></div></div><div style="display:grid;grid-template-columns:1fr 2fr;gap:1rem" class="cg"><div><h4 style="margin-bottom:.8rem;color:var(--mt);font-size:.9rem">Available ('+od.length+')</h4><div class="dl" id="docListEl">'+(od.length?'':'<div class="ndm"><i class="fa-solid fa-user-doctor"></i><p>No doctors online. Book an appointment below.</p></div>')+'</div><button class="btn bp" style="width:100%;margin-top:.8rem;justify-content:center" id="bookFCB"><i class="fa-solid fa-calendar-check"></i> Book Appointment</button></div><div class="cc"><div class="cm" id="chatMsgs"><div class="msg md"><strong>MediConnect AI</strong>'+(od.length?'Select a doctor, then describe your symptoms.':'No doctors online. Book an appointment and we will notify you.')+'</div></div><div class="cin"><input type="text" id="chatIn" placeholder="'+(od.length?'Type symptoms or question...':'Waiting for doctor...')+'" '+(od.length?'':'disabled')+'><button class="btn bp" id="chatSend" '+(od.length?'':'disabled')+'>Send</button></div></div></div></div>'+
+
+    /* HEALTH SENSOR */
+    '<div class="card hm" id="health"><div class="ch"><div class="ci"><i class="fa-solid fa-heart-pulse"></i></div><div><h3>Health Sensor</h3><small style="color:var(--a)"><i class="fa-solid fa-circle" style="font-size:.5rem"></i> Real-time + AI</small></div></div><div class="sd"><div class="sdv" id="hrS"><div class="vl" id="hrV">--</div><div class="lb">Heart Rate</div><span class="sti stn" id="hrSt"></span></div><div class="sdv" id="bpS"><div class="vl" id="bpV">--/--</div><div class="lb">Blood Pressure</div><span class="sti stn" id="bpSt"></span></div><div class="sdv" id="oxS"><div class="vl" id="oxV">--%</div><div class="lb">Oxygen</div><span class="sti stn" id="oxSt"></span></div><div class="sdv" id="tpS"><div class="vl" id="tpV">--</div><div class="lb">Temperature</div><span class="sti stn" id="tpSt"></span></div></div><div style="margin-top:1rem"><button class="btn bp" id="monBtn" style="width:100%"><i class="fa-solid fa-play"></i> Start AI Monitoring</button></div><div class="chc"><canvas id="hC"></canvas></div></div>'+
+
+    /* BMI */
+    '<div class="card" id="bmiC"><div class="ch"><div class="ci"><i class="fa-solid fa-weight-scale"></i></div><div><h3>BMI Calculator</h3></div></div><div class="fg"><label>Height (cm)</label><input type="number" id="bmiH" placeholder="175"></div><div class="fg"><label>Weight (kg)</label><input type="number" id="bmiW" placeholder="70"></div><div class="br" id="bmiR"><div class="bv2" id="bmiV">--</div><div class="bc" id="bmiCat">--</div><div class="bb"><div class="bm" id="bmiMk"></div></div><div style="font-size:.7rem;color:var(--md);margin-top:.5rem">Source: WHO BMI</div></div></div>'+
+
+    /* SYMPTOM CHECKER */
+    '<div class="card" id="symC" style="grid-column:span 2"><div class="ch"><div class="ci" style="background:linear-gradient(135deg,#8b5cf6,#6366f1)"><i class="fa-solid fa-brain"></i></div><div><h3>AI Symptom Detection</h3><small style="color:#8b5cf6;font-size:.75rem">Full analysis with medical sources</small></div></div><p style="margin-bottom:.8rem;font-size:.9rem">Select symptoms:</p><div class="stg" id="symTags">'+Object.keys(MKB).map(function(s){return '<span class="st" data-sym="'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span>'}).join('')+'</div><div style="margin-top:.8rem;display:flex;gap:.5rem"><input type="text" id="custSym" placeholder="Custom symptom..." style="flex:1;padding:.7rem;border:1px solid var(--gl);background:rgba(0,0,0,.2);color:#fff;border-radius:8px;outline:none"><button class="btn bs" id="addCustB"><i class="fa-solid fa-plus"></i></button></div><div id="selDisp" style="margin-top:.8rem;display:none"><label style="color:var(--mt);font-size:.85rem">Selected:</label><div id="selList" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem"></div></div><button class="btn bv" id="analyzeBtn" style="width:100%;margin-top:1rem"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Analyze Symptoms</button><div id="symRes" style="margin-top:.8rem;display:none"></div></div>'+
+
+    /* MEDICATIONS */
+    '<div class="card" id="medC" style="grid-column:span 2"><div class="ch"><div class="ci" style="background:linear-gradient(135deg,var(--a),#d97706)"><i class="fa-solid fa-pills"></i></div><div><h3>Medication Tracker</h3><small style="color:var(--a);font-size:.75rem"><i class="fa-solid fa-bell"></i> Bell reminder + AI interaction check</small></div></div><div id="intW"></div><div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:.5rem;margin-bottom:.8rem;align-items:end" class="mfg"><div class="fg" style="margin-bottom:0"><label>Medication</label><input type="text" id="medN" placeholder="e.g., Paracetamol"></div><div class="fg" style="margin-bottom:0"><label>Dose</label><input type="text" id="medD" placeholder="500mg"></div><div class="fg" style="margin-bottom:0"><label>Time</label><input type="time" id="medT"></div><button class="btn bp" id="medAddBtn" style="height:40px"><i class="fa-solid fa-plus"></i></button></div><div class="ml" id="medList"></div></div>'+
+
+    /* TRENDS + FACILITIES */
+    '<div class="card"><div class="ch"><div class="ci"><i class="fa-solid fa-chart-line"></i></div><div><h3>Health Trends</h3></div></div><div class="chc"><canvas id="tC"></canvas></div></div>'+
+    '<div class="card"><div class="ch"><div class="ci"><i class="fa-solid fa-hospital"></i></div><div><h3>Nearby Facilities</h3></div></div><div id="facList"></div></div>'+
+    '</div>'+
+
+    /* EDUCATION */
+    '<div class="card" style="margin-top:1.5rem"><div class="ch"><div class="ci"><i class="fa-solid fa-book-medical"></i></div><div><h3>Health Education</h3></div></div><div class="eg">'+Object.entries(ARTS).map(function(e){return '<div class="ec" data-art="'+e[0]+'"><h4><i class="fa-solid '+e[1].i+'"></i> '+e[1].t+'</h4><p>Click to read</p></div>'}).join('')+'</div><div id="artD"></div></div>';
+
+    setTimeout(function(){renderOutb();renderDocL();renderFac();renderMeds();initCharts();attachPatL();var d=document.getElementById('a-date');if(d)d.min=new Date().toISOString().split('T')[0];var e=document.getElementById('a-email');if(e)e.value=CU.email},100);
+}
+
+/* ===== ATTACH ALL PATIENT LISTENERS ===== */
+function attachPatL(){
+    /* Hero */
+    document.getElementById('hCB').addEventListener('click',function(){document.getElementById('consult').scrollIntoView({behavior:'smooth'})});
+    document.getElementById('hAB').addEventListener('click',function(){document.getElementById('aiPanel').scrollIntoView({behavior:'smooth'})});
+    document.getElementById('hHB').addEventListener('click',function(){document.getElementById('health').scrollIntoView({behavior:'smooth'})});
+    document.getElementById('hBB').addEventListener('click',function(){bookAppt()});
+    document.getElementById('bookFCB').addEventListener('click',function(){bookAppt()});
+
+    /* Chat */
+    document.getElementById('chatSend').addEventListener('click',sendChat);
+    document.getElementById('chatIn').addEventListener('keydown',function(e){if(e.key==='Enter')sendChat()});
+
+    /* Monitor */
+    document.getElementById('monBtn').addEventListener('click',togMon);
+
+    /* BMI */
+    document.getElementById('bmiH').addEventListener('input',calcBMI);
+    document.getElementById('bmiW').addEventListener('input',calcBMI);
+
+    /* Symptoms */
+    document.querySelectorAll('#symTags .st').forEach(function(el){el.addEventListener('click',function(){togSym(this)})});
+    document.getElementById('addCustB').addEventListener('click',addCust);
+    document.getElementById('custSym').addEventListener('keydown',function(e){if(e.key==='Enter')addCust()});
+    document.getElementById('analyzeBtn').addEventListener('click',analyzeSym);
+
+    /* Meds */
+    document.getElementById('medAddBtn').addEventListener('click',addMed);
+
+    /* Education */
+    document.querySelectorAll('.ec[data-art]').forEach(function(el){el.addEventListener('click',function(){openArt(this.getAttribute('data-art'))})});
+
+    /* AI cards */
+    document.getElementById('aiAnom').addEventListener('click',function(){openAiD('anomaly')});
+    document.getElementById('aiPat').addEventListener('click',function(){openAiD('pattern')});
+    document.getElementById('aiInt').addEventListener('click',function(){openAiD('interaction')});
+    document.getElementById('aiOut').addEventListener('click',function(){openAiD('outbreak')});
+}
+
+/* ===== DOCTOR DASHBOARD ===== */
+function renderDocDash(){
+    var lp=onPats(),st=getSt(),appts=getA().filter(function(a){return a.doc===CU.name}),today=new Date().toISOString().split('T')[0],tAp=appts.filter(function(a){return a.date===today}),urg=lp.filter(function(p){return p.urgency==='high'}).length;
+    document.getElementById('mainC').innerHTML=
+    '<section class="hero"><h1>Doctor Dashboard</h1><p>Real patient data from active sessions.</p><div class="cta"><button class="btn bp" id="dqBtn"><i class="fa-solid fa-users"></i> Queue ('+lp.length+')</button><button class="btn bs" id="deBtn"><i class="fa-solid fa-envelope"></i> Emails</button></div></section>'+
+    '<div class="sb"><div class="si"><div class="sv" style="color:var(--g)">'+lp.length+'</div><div class="sl">Patients</div></div><div class="si"><div class="sv" style="color:var(--d)">'+urg+'</div><div class="sl">Urgent</div></div><div class="si"><div class="sv">'+(CU.cons||0)+'</div><div class="sl">Consultations</div></div><div class="si"><div class="sv">4.8<i class="fa-solid fa-star" style="font-size:.8rem;color:var(--a);margin-left:4px"></i></div><div class="sl">Rating</div></div></div>'+
+    '<div class="dash"><div class="card" id="queue" style="grid-column:span 2"><div class="ch"><div class="ci" style="background:linear-gradient(135deg,var(--g),#059669)"><i class="fa-solid fa-user-group"></i></div><div><h3>Patient Queue</h3><small style="color:var(--g)">'+lp.length+' waiting</small></div></div><div class="dpq" id="pqList">'+(lp.length?'':'<div class="ndm"><i class="fa-solid fa-user"></i><p>No patients in queue.</p></div>')+'</div></div>'+
+    '<div class="card"><div class="ch"><div class="ci" style="background:linear-gradient(135deg,var(--a),#d97706)"><i class="fa-solid fa-calendar-days"></i></div><div><h3>Schedule</h3></div></div><div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem">'+(tAp.length?tAp.map(function(a){return '<div style="padding:.6rem;background:rgba(14,165,233,.08);border-radius:8px;font-size:.85rem;border-left:3px solid var(--p)"><span style="color:var(--p);font-weight:600">'+a.time+'</span> '+(a.reason||'General')+'</div>'}).join(''):'<p style="color:var(--mt);text-align:center;padding:1rem">No appointments today.</p>')+'</div></div>'+
+    '<div class="card"><div class="ch"><div class="ci" style="background:linear-gradient(135deg,var(--d),#f97316)"><i class="fa-solid fa-bell"></i></div><div><h3>Alerts</h3></div></div><div style="display:flex;flex-direction:column;gap:.6rem;margin-top:.5rem">'+(urg>0?'<div style="padding:.7rem;background:rgba(239,68,68,.1);border-left:3px solid var(--d);border-radius:8px;font-size:.85rem"><strong style="color:var(--d)">Urgent:</strong> '+urg+' patient(s)</div>':'')+'<div style="padding:.7rem;background:rgba(16,185,129,.1);border-left:3px solid var(--g);border-radius:8px;font-size:.85rem"><strong style="color:var(--g)">Status:</strong> Online</div></div></div></div>'+
+    '<div class="card" style="margin-top:1.5rem"><div class="ch"><div class="ci"><i class="fa-solid fa-book-medical"></i></div><div><h3>Medical References</h3></div></div><div class="eg">'+Object.entries(ARTS).map(function(e){return '<div class="ec" data-art="'+e[0]+'"><h4><i class="fa-solid '+e[1].i+'"></i> '+e[1].t+'</h4><p>Click to read</p></div>'}).join('')+'</div><div id="artD"></div></div>';
+    setTimeout(function(){renderDQ(lp);document.getElementById('dqBtn').addEventListener('click',function(){document.getElementById('queue').scrollIntoView({behavior:'smooth'})});document.getElementById('deBtn').addEventListener('click',showEml);document.querySelectorAll('.ec[data-art]').forEach(function(el){el.addEventListener('click',function(){openArt(this.getAttribute('data-art'))})})},100);
+}
+
+function renderDQ(pats){
+    var el=document.getElementById('pqList');if(!el||!pats.length)return;
+    el.innerHTML=pats.map(function(p,i){var wm=Math.floor((Date.now()-p.loginTime)/60000);return '<div class="dpi"><div class="dpav">'+p.name.split(' ').map(function(w){return w[0]}).join('')+'</div><div class="dpif"><div class="dpin">'+san(p.name)+'</div><div class="dpic">Waiting '+wm+' min</div></div><button class="btn bp bsm" data-pid="'+p.id+'">Start</button></div>'}).join('');
+    el.querySelectorAll('[data-pid]').forEach(function(b){b.addEventListener('click',function(){acceptPat(this.getAttribute('data-pid'))})});
+}
+
+function acceptPat(pid){
+    var pats=getP(),p=pats.find(function(x){return x.id===pid});if(!p)return;
+    confirmF('Accept '+p.name+'?',function(){var i=pats.findIndex(function(x){return x.id===pid});if(i!==-1){pats[i].loginTime=null;S('mc_pat',pats)}var st=getSt();st.consCount++;S('mc_stats',st);if(CU.cons!==undefined){CU.cons=(CU.cons||0)+1;S('mc_session',CU);var ds=getD(),di=ds.findIndex(function(d){return d.id===CU.id});if(di!==-1){ds[di].cons=CU.cons;S('mc_doc',ds)}}toast('Started with '+p.name,'fa-user-doctor','tgu');renderDocDash()},'Accept','bgu');
+}
+
+/* ===== RENDER HELPERS ===== */
+function renderOutb(){document.getElementById('obList').innerHTML=OUTB.map(function(o){return '<div class="oi"><div><strong>'+o.d+'</strong><p style="font-size:.85rem;color:var(--mt)">'+o.l+' &bull; '+o.c+' cases ('+o.upd+')</p><div class="osrc"><i class="fa-solid fa-link"></i> '+o.src+'</div></div><span class="osv s'+o.s.charAt(0)+'">'+o.s.toUpperCase()+'</span></div>'}).join('')}
+
+function renderDocL(){
+    var el=document.getElementById('docListEl'),od=onDocs();if(!od.length)return;
+    el.innerHTML=od.map(function(d){return '<div class="di" data-did="'+d.id+'"><div class="dav"><i class="fa-solid fa-user-doctor"></i></div><div class="dif"><div class="dn">'+san(d.name)+'</div><div class="ds">'+san(d.specialty)+'</div></div><span class="dst dso">Online</span></div>'}).join('');
+    el.querySelectorAll('.di').forEach(function(diel){diel.addEventListener('click',function(){selDocR(this.getAttribute('data-did'),this)})});
+}
+
+function selDocR(did,el){
+    document.querySelectorAll('.di').forEach(function(e){e.classList.remove('sel')});el.classList.add('sel');selDoc=did;
+    var d=getD().find(function(x){return x.id===did}),c=document.getElementById('chatMsgs');
+    c.innerHTML+='<div class="msg md"><strong>MediConnect AI</strong>Connected to '+san(d.name)+' ('+d.specialty+'). Describe your symptoms.</div>';c.scrollTop=c.scrollHeight;
+    toast(d.name+' selected — consultation active','fa-user-doctor','tgu');var st=getSt();st.respTime+=2.3;S('mc_stats',st);
+    addDet('info','fa-user-doctor','Consultation Started','Connected with '+d.name);updateDetLog();
+    var cc=document.getElementById('consult');if(cc)cc.classList.add('cons-active');
+}
+
+function renderFac(){document.getElementById('facList').innerHTML=FACS.map(function(f){return '<div class="fi2"><div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:.8rem"><div style="width:40px;height:40px;border-radius:8px;background:rgba(14,165,233,.1);display:flex;align-items:center;justify-content:center"><i class="fa-solid '+f.icon+'" style="color:var(--p)"></i></div><div><strong style="font-size:.9rem">'+f.name+'</strong><p style="font-size:.85rem;color:var(--mt)">'+f.dist+' &bull; '+f.type+'</p></div></div><button class="btn bs bsm" data-fac="'+encodeURIComponent(f.name)+'"><i class="fa-solid fa-diamond-turn-right"></i></button></div></div>'}).join('');document.querySelectorAll('[data-fac]').forEach(function(b){b.addEventListener('click',function(){window.open('https://www.google.com/maps/search/?api=1&query='+this.getAttribute('data-fac'),'_blank')})})}
+
+function renderMeds(){
+    var el=document.getElementById('medList');if(!el)return;
+    if(!meds.length){el.innerHTML='<div style="text-align:center;color:var(--mt);padding:2rem;font-size:.9rem"><i class="fa-solid fa-pills" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.8rem"></i>No medications yet.</div>';return}
+    el.innerHTML=meds.map(function(m,i){return '<div class="mi '+(m.taken?'tk':'')+'"><button class="mc '+(m.taken?'ck':'')+'" data-mtog="'+i+'"></button><div class="mf"><div class="mn">'+san(m.name)+'</div><div class="md2">'+san(m.dose)+'</div><div class="mt2"><i class="fa-regular fa-clock"></i> '+m.time+'</div></div><div class="ma"><button class="btn bs bi" data-medit="'+i+'"><i class="fa-solid fa-pen" style="font-size:.75rem"></i></button><button class="btn bd bi" data-mdel="'+i+'"><i class="fa-solid fa-trash" style="font-size:.75rem"></i></button></div></div>'}).join('');
+    el.querySelectorAll('[data-mtog]').forEach(function(b){b.addEventListener('click',function(){togTaken(parseInt(this.getAttribute('data-mtog')))})});
+    el.querySelectorAll('[data-medit]').forEach(function(b){b.addEventListener('click',function(){editMed(parseInt(this.getAttribute('data-medit')))})});
+    el.querySelectorAll('[data-mdel]').forEach(function(b){b.addEventListener('click',function(){delMed(parseInt(this.getAttribute('data-mdel')))})});
+}
+
+function initCharts(){
+    var hc=document.getElementById('hC');if(!hc)return;
+    hChart=new Chart(hc.getContext('2d'),{type:'line',data:{labels:[],datasets:[{label:'HR',data:[],borderColor:'#0ea5e9',backgroundColor:'rgba(14,165,233,.08)',tension:.4,fill:true,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:0},plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,min:40,max:140,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#64748b',font:{size:10}}},x:{grid:{display:false},ticks:{color:'#64748b',font:{size:10},maxTicksLimit:5}}}}});
+    var tc=document.getElementById('tC');if(!tc)return;
+    tChart=new Chart(tc.getContext('2d'),{type:'bar',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{label:'Steps(k)',data:[0,0,0,0,0,0,0],backgroundColor:'rgba(14,165,233,.5)',borderRadius:6},{label:'Sleep(hrs)',data:[0,0,0,0,0,0,0],backgroundColor:'rgba(6,182,212,.5)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},scales:{y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#64748b'}},x:{ticks:{color:'#64748b'},grid:{display:false}}}}});
+}
+
+/* ===== CHAT ===== */
+function sendChat(){
+    var inp=document.getElementById('chatIn'),msg=inp.value.trim();if(!msg)return;
+    var c=document.getElementById('chatMsgs');c.innerHTML+='<div class="msg mp"><strong>You</strong>'+san(msg)+'</div>';inp.value='';c.scrollTop=c.scrollHeight;
+    var tid='t'+Date.now();c.innerHTML+='<div class="ti" id="'+tid+'"><div class="td2"></div><div class="td2"></div><div class="td2"></div></div>';c.scrollTop=c.scrollHeight;
+    setTimeout(function(){var t=document.getElementById(tid);if(t)t.remove();
+        if(!selDoc){c.innerHTML+='<div class="msg md"><strong>MediConnect AI</strong>Select a doctor from the list for a live consultation, or use the AI Symptom Detection for automated analysis.</div>';c.scrollTop=c.scrollHeight;return}
+        var d=getD().find(function(x){return x.id===selDoc});
+        var r=['Can you tell me more about when these started?','Have you experienced any fever?','I recommend scheduling an examination.','Monitor and report if it worsens.','Are you on any medications?','Some diagnostic tests would help clarify.','Rate the pain 1-10.','Have you had similar episodes?','Increase fluids and rest.','Let me review your vitals.'];
+        c.innerHTML+='<div class="msg md"><strong>'+san(d.name)+'</strong>'+r[Math.floor(Math.random()*r.length)]+'</div>';c.scrollTop=c.scrollHeight;var st=getSt();st.helped++;S('mc_stats',st);addDet('good','fa-comment-medical','Consultation Active','Message with '+d.name);updateDetLog()
+    },1200+Math.random()*800);
+}
+
+/* ===== AI DETAIL MODALS ===== */
+function openAiD(type){
+    var title='',content='';
+    if(type==='anomaly'){title='AI Anomaly Detection';content='<p style="color:var(--mt);line-height:1.6;margin-bottom:1rem">Monitors vitals in real-time, flagging readings that deviate from clinical thresholds.</p><div class="sas"><h5>Detection Parameters</h5><ul><li><strong>Heart Rate:</strong> &lt;60 or &gt;100 BPM</li><li><strong>Blood Pressure:</strong> Systolic &gt;140 or &lt;90</li><li><strong>Oxygen:</strong> SpO2 &lt;95%</li><li><strong>Temperature:</strong> &gt;37.5C</li></ul></div><div class="sas"><h5>Recent Detections</h5>'+(detLog.filter(function(d){return d.type==='danger'||d.type==='warn'}).slice(0,5).map(function(d){return '<div class="det-entry"><div class="de-i '+d.type+'"><i class="fa-solid '+d.icon+'"></i></div><div><strong>'+d.title+'</strong><div style="color:var(--mt)">'+d.desc+'</div><div class="de-t">'+d.time+'</div></div></div>'}).join('')||'<p style="color:var(--md)">No anomalies yet. Start monitoring.</p>')+'</div><button class="btn bp" style="width:100%;justify-content:center;margin-top:1rem" id="aiMonStart"><i class="fa-solid fa-play"></i> Start Monitoring</button>'}
+    else if(type==='pattern'){title='AI Pattern Recognition';content='<p style="color:var(--mt);line-height:1.6;margin-bottom:1rem">Analyzes symptom clusters against '+Object.keys(CONDS).length+' conditions from WHO, CDC, Mayo Clinic sources.</p><div class="sas"><h5>How It Works</h5><ul><li>Select symptoms from the knowledge base</li><li>AI cross-references with condition patterns</li><li>Match percentage calculated per condition</li><li>Severity assessment from combination</li><li>Recommendations with source citations</li></ul></div><button class="btn bv" style="width:100%;justify-content:center;margin-top:1rem" id="aiSymStart"><i class="fa-solid fa-brain"></i> Open Symptom Checker</button>'}
+    else if(type==='interaction'){title='AI Drug Interaction';content='<p style="color:var(--mt);line-height:1.6;margin-bottom:1rem">Automatically checks medications against known interactions from FDA and NIH data.</p><div class="sas"><h5>Monitored Interactions</h5>'+DRUG_I.map(function(i){return '<div style="padding:.5rem;background:rgba(0,0,0,.15);border-radius:8px;margin-bottom:.5rem;border-left:3px solid var(--'+(i.s==='high'?'d':'a')+')"><strong>'+i.d1+' + '+i.d2+'</strong><p style="font-size:.8rem;color:var(--mt)">'+i.m+'</p></div>'}).join('')+'</div><button class="btn bp" style="width:100%;justify-content:center;margin-top:1rem" id="aiMedStart"><i class="fa-solid fa-pills"></i> Open Medication Tracker</button>'}
+    else if(type==='outbreak'){title='AI Outbreak Surveillance';content='<div class="sas"><h5>Active Alerts</h5>'+OUTB.map(function(o){return '<div style="padding:.6rem;background:rgba(0,0,0,.15);border-radius:8px;margin-bottom:.5rem"><div style="display:flex;justify-content:space-between;align-items:center"><strong>'+o.d+'</strong><span class="osv s'+o.s.charAt(0)+'">'+o.s.toUpperCase()+'</span></div><p style="font-size:.82rem;color:var(--mt)">'+o.l+' &bull; '+o.c+' cases</p></div>'}).join('')+'</div>'}
+    document.getElementById('aiDT').textContent=title;document.getElementById('aiDC').innerHTML=content;openM('aiDM');
+    /* Attach close-redirect buttons */
+    setTimeout(function(){
+        var ms=document.getElementById('aiMonStart');if(ms)ms.addEventListener('click',function(){closeM('aiDM');document.getElementById('health').scrollIntoView({behavior:'smooth'})});
+        var ss=document.getElementById('aiSymStart');if(ss)ss.addEventListener('click',function(){closeM('aiDM');document.getElementById('symC').scrollIntoView({behavior:'smooth'})});
+        var ms2=document.getElementById('aiMedStart');if(ms2)ms2.addEventListener('click',function(){closeM('aiDM');document.getElementById('medC').scrollIntoView({behavior:'smooth'})});
+    },50);
+}
+
+function updateDetLog(){
+    var el=document.getElementById('detLog');if(!el)return;
+    if(!detLog.length){el.innerHTML='<div style="text-align:center;color:var(--md);padding:1rem;font-size:.85rem">No detections yet.</div>';return}
+    el.innerHTML=detLog.slice(0,8).map(function(d){return '<div class="det-entry"><div class="de-i '+d.type+'"><i class="fa-solid '+d.icon+'"></i></div><div><strong>'+d.title+'</strong><div style="color:var(--mt);font-size:.8rem">'+d.desc+'</div><div class="de-t">'+d.time+'</div></div></div>'}).join('');
+}
+
+/* ===== MONITORING ===== */
+function togMon(){
+    var btn=document.getElementById('monBtn');
+    if(monInt){clearInterval(monInt);monInt=null;hData={hr:[],lb:[]};if(hChart){hChart.data.labels=[];hChart.data.datasets[0].data=[];hChart.update()}btn.innerHTML='<i class="fa-solid fa-play"></i> Start AI Monitoring';['hrV','bpV','oxV','tpV'].forEach(function(id){document.getElementById(id).textContent=id==='bpV'?'--/--':'--'});toast('Monitoring stopped','fa-stop-circle','ts');addDet('info','fa-stop-circle','Monitoring Stopped','Paused');updateDetLog();
+        var ac=document.getElementById('aiAnom');if(ac){var s=ac.querySelector('.ai-st');if(s)s.innerHTML='<span class="ai-dot pu"></span> <span style="color:var(--md)">Idle</span>'}return}
+    btn.innerHTML='<i class="fa-solid fa-stop"></i> Stop AI Monitoring';toast('AI Monitoring active!','fa-brain','tgu');addDet('good','fa-play-circle','Monitoring Started','AI anomaly detection active');updateDetLog();
+    var ac=document.getElementById('aiAnom');if(ac){var s=ac.querySelector('.ai-st');if(s)s.innerHTML='<span class="ai-dot gn"></span> <span style="color:var(--g)">Active</span>'}
+    monInt=setInterval(function(){
+        var hr=Math.floor(60+Math.random()*40),sys=Math.floor(110+Math.random()*30),dia=Math.floor(70+Math.random()*20),o=Math.floor(95+Math.random()*5),t=(36+Math.random()*2).toFixed(1);
+        document.getElementById('hrV').textContent=hr;document.getElementById('bpV').textContent=sys+'/'+dia;document.getElementById('oxV').textContent=o+'%';document.getElementById('tpV').textContent=t+'\u00B0C';
+        uS('hrS','hrSt',hr,60,100);uS('bpS','bpSt',sys,90,140);uS('oxS','oxSt',o,95,100);uS('tpS','tpSt',parseFloat(t),36,37.5);
+        /* AI Anomaly Detection */
+        var anoms=[];
+        if(hr>100){anoms.push({type:'danger',icon:'fa-heart-pulse',title:'High Heart Rate',desc:'HR '+hr+' BPM exceeds normal (60-100). Source: AHA.'})}
+        if(hr<60){anoms.push({type:'warn',icon:'fa-heart-pulse',title:'Low Heart Rate',desc:'HR '+hr+' BPM below normal. Source: AHA.'})}
+        if(sys>140){anoms.push({type:'danger',icon:'fa-gauge-high',title:'Elevated BP',desc:'Systolic '+sys+' mmHg. Source: AHA/ACC 2017.'})}
+        if(o<95){anoms.push({type:'danger',icon:'fa-lungs',title:'Low SpO2',desc:o+'% below 95%. Source: ATS.'})}
+        if(parseFloat(t)>37.5){anoms.push({type:'warn',icon:'fa-temperature-high',title:'Fever Detected',desc:t+'\u00B0C. Source: Mayo Clinic.'})}
+        anoms.forEach(function(a){addDet(a.type,a.icon,a.title,a.desc)});
+        if(anoms.length>=2){addDet('danger','fa-brain','AI Pattern: Multiple Anomalies','Simultaneous vital deviations — consult recommended.');toast('AI ALERT: Multiple anomalies!','fa-brain','te');var st=getSt();st.detections=Math.min(100,st.detections+5);S('mc_stats',st)}
+        else if(anoms.length===1){var st2=getSt();st2.detections=Math.min(100,st2.detections+1);S('mc_stats',st2)}
+        updateDetLog();
+        var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});hData.lb.push(now);hData.hr.push(hr);if(hData.lb.length>15){hData.lb.shift();hData.hr.shift()}if(hChart){hChart.data.labels=hData.lb;hChart.data.datasets[0].data=hData.hr;hChart.update('none')}
+    },2000);
+}
+
+function uS(sid,stid,v,mn,mx){var s=document.getElementById(sid),st=document.getElementById(stid);s.className='sdv';st.className='sti';if(v<mn||v>mx){s.classList.add('alt');st.classList.add('std')}else if(v<mn+5||v>mx-5){s.classList.add('wrn');st.classList.add('stw')}else{st.classList.add('stn')}}
+
+/* ===== BMI ===== */
+function calcBMI(){var h=parseFloat(document.getElementById('bmiH').value),w=parseFloat(document.getElementById('bmiW').value);if(!h||!w||h<=0||w<=0){document.getElementById('bmiR').style.display='none';return}var bmi=(w/((h/100)**2)).toFixed(1);document.getElementById('bmiR').style.display='block';document.getElementById('bmiV').textContent=bmi;var cat,col,pct;if(bmi<18.5){cat='Underweight';col='var(--a)';pct=Math.max(0,bmi/40*100)}else if(bmi<25){cat='Normal Weight';col='var(--g)';pct=bmi/40*100}else if(bmi<30){cat='Overweight';col='var(--a)';pct=bmi/40*100}else{cat='Obese';col='var(--d)';pct=Math.min(100,bmi/40*100)}document.getElementById('bmiCat').textContent=cat;document.getElementById('bmiV').style.color=col;document.getElementById('bmiMk').style.left=pct+'%'}
+
+/* ===== SYMPTOMS ===== */
+function togSym(el){el.classList.toggle('on');var s=el.getAttribute('data-sym');if(el.classList.contains('on'))selSyms.add(s);else selSyms.delete(s);updSelDisp()}
+function addCust(){var inp=document.getElementById('custSym'),s=inp.value.trim();if(!s)return;selSyms.add(s.toLowerCase());inp.value='';updSelDisp();toast('Added: '+s,'fa-plus-circle','ts')}
+function updSelDisp(){var d=document.getElementById('selDisp'),l=document.getElementById('selList');if(!selSyms.size){d.style.display='none';return}d.style.display='block';l.innerHTML=Array.from(selSyms).map(function(s){return '<span class="st on" style="cursor:pointer" data-rm="'+s.replace(/"/g,'&quot;')+'">'+san(s)+' <i class="fa-solid fa-xmark" style="font-size:.7rem"></i></span>'}).join('');l.querySelectorAll('[data-rm]').forEach(function(sp){sp.addEventListener('click',function(){selSyms.delete(this.getAttribute('data-rm'));document.querySelectorAll('#symTags .st').forEach(function(t){if(t.getAttribute('data-sym')===this.getAttribute('data-rm'))t.classList.remove('on')}.bind(this));updSelDisp()})})}
+
+function analyzeSym(){
+    if(!selSyms.size){toast('Select symptoms first','fa-triangle-exclamation','tw');return}
+    var syms=Array.from(selSyms),html='<div class="sa">';
+    var sev='lo',sevLbl='LOW RISK';
+    var hasCP=syms.some(function(s){return s.indexOf('chest pain')>-1}),hasSOB=syms.some(function(s){return s.indexOf('shortness')>-1});
+    if(hasCP&&hasSOB){sev='crit';sevLbl='CRITICAL — SEEK IMMEDIATE MEDICAL ATTENTION'}
+    else if(hasCP||hasSOB||(syms.some(function(s){return s.indexOf('dizziness')>-1})&&syms.length>2)){sev='hi';sevLbl='HIGH — See a doctor soon'}
+    else if(syms.length>=3){sev='mod';sevLbl='MODERATE — Monitor closely'}
+    else{sev='lo';sevLbl='LOW — Self-care likely sufficient'}
+    html+='<div class="sevi '+sev+'"><i class="fa-solid fa-circle-exclamation"></i> AI Severity: '+sevLbl+'</div>';
+    html+='<div class="srt"><i class="fa-solid fa-robot"></i> AI assessment based on '+syms.length+' symptom(s). Not a diagnosis.</div>';
+    html+='<div class="sab op"><div class="sas"><h5><i class="fa-solid fa-microscope"></i> Individual Symptom Analysis</h5>';
+    syms.forEach(function(sym){var key=sym.toLowerCase(),info=MKB[key];if(info){html+='<div style="padding:.8rem;background:rgba(0,0,0,.15);border-radius:8px;margin-bottom:.6rem;border-left:3px solid var(--p)"><p><strong style="color:var(--lt);font-size:1rem">'+sym.charAt(0).toUpperCase()+sym.slice(1)+'</strong></p><p><strong>Definition:</strong> '+info.def+'</p><p><strong>Normal:</strong> '+info.nr+'</p><p style="color:var(--a)"><strong>When Concerning:</strong> '+info.wc+'</p><p><strong>Common Causes:</strong></p><ul>';info.causes.forEach(function(c){html+='<li>'+c+'</li>'});html+='</ul>';if(info.rf){html+='<p style="color:var(--d)"><strong>Red Flags:</strong></p><ul>';info.rf.forEach(function(r){html+='<li style="color:var(--d)">'+r+'</li>'});html+='</ul>'}html+='<div class="srt"><i class="fa-solid fa-book"></i> '+info.src+'</div></div>'}else{html+='<div style="padding:.5rem;background:rgba(0,0,0,.1);border-radius:8px;margin-bottom:.4rem"><strong style="color:var(--lt)">'+sym+':</strong> <span style="color:var(--mt)">Not in knowledge base. Consult a provider.</span></div>'}});
+    html+='</div><div class="sas"><h5><i class="fa-solid fa-list-check"></i> AI Condition Matching</h5>';
+    var matched=false;
+    Object.values(CONDS).forEach(function(cond){var mc=cond.syms.filter(function(s){return syms.some(function(sym){return sym.indexOf(s)>-1})}).length,mp=Math.round(mc/cond.syms.length*100);if(mc>0){matched=true;var pc=mp>=70?'g':mp>=40?'a':'mt';html+='<div style="padding:.6rem;background:rgba(0,0,0,.15);border-radius:8px;margin-bottom:.5rem"><div style="display:flex;justify-content:space-between;align-items:center"><strong>'+cond.name+'</strong><span style="font-size:.8rem;color:var(--'+pc+')">'+mp+'% match</span></div><div style="height:4px;border-radius:2px;background:rgba(255,255,255,.1);margin:.3rem 0"><div style="height:100%;width:'+mp+'%;border-radius:2px;background:var(--'+pc+')"></div></div><div class="srt"><i class="fa-solid fa-book"></i> '+cond.src+'</div></div>'}});
+    if(!matched)html+='<p style="color:var(--mt)">No specific conditions matched.</p>';
+    html+='</div><div class="sas"><h5><i class="fa-solid fa-lightbulb"></i> AI Recommendations</h5><ul>';
+    if(sev==='crit')html+='<li style="color:var(--d);font-weight:700">GO TO EMERGENCY ROOM IMMEDIATELY</li>';
+    else if(sev==='hi')html+='<li style="color:var(--a);font-weight:600">Schedule appointment within 24-48 hours</li>';
+    else if(sev==='mod')html+='<li>Monitor symptoms for 48 hours</li>';
+    else html+='<li>Rest and hydrate. See provider if >3 days.</li>';
+    html+='<li>Do not self-diagnose based on this AI analysis</li><li>Keep a symptom diary with timing and severity</li>';
+    if(syms.length>1)html+='<li>Symptoms may be unrelated — a doctor can differentiate</li>';
+    html+='<li>Start a live consultation for personalized advice</li></ul></div></div></div>';
+    document.getElementById('symRes').style.display='block';document.getElementById('symRes').innerHTML=html;
+    addDet(sev==='crit'||sev==='hi'?'danger':sev==='mod'?'warn':'info','fa-brain','AI Symptom Analysis',sevLbl+' — '+syms.length+' symptom(s) analyzed');updateDetLog();
+    var st=getSt();st.detections=Math.min(100,st.detections+3);S('mc_stats',st);
+}
+
+/* ===== MEDICATIONS ===== */
+function checkInt(nm){var nl=nm.toLowerCase(),w=[];meds.forEach(function(m){DRUG_I.forEach(function(i){if((nl.indexOf(i.d1)>-1&&m.name.toLowerCase().indexOf(i.d2)>-1)||(nl.indexOf(i.d2)>-1&&m.name.toLowerCase().indexOf(i.d1)>-1))w.push({drug:m.name,s:i.s,m:i.m})})});var c=document.getElementById('intW');if(!c)return true;if(!w.length){c.innerHTML='';return true}c.innerHTML=w.map(function(x){return '<div class="iw2 '+(x.s==='moderate'?'mod2':'')+'"><strong><i class="fa-solid fa-triangle-exclamation"></i> Interaction:</strong> '+x.drug+' — '+x.m+'</div>'}).join('');if(w.some(function(x){return x.s==='high'})){toast('High-risk interaction!','fa-triangle-exclamation','te');addDet('danger','fa-pills','Drug Interaction','High-risk: '+nm);updateDetLog();return false}addDet('warn','fa-pills','Drug Interaction','Moderate: '+nm);updateDetLog();return true}
+
+function addMed(){
+    var n=document.getElementById('medN').value.trim(),d=document.getElementById('medD').value.trim(),t=document.getElementById('medT').value;
+    if(!n||!d||!t){toast('Fill all fields','fa-triangle-exclamation','tw');return}
+    if(!checkInt(n))return;
+    if(editIdx!==null){meds[editIdx]={name:n,dose:d,time:t,taken:meds[editIdx].taken};editIdx=null;toast('Updated!','fa-pen','ts');document.getElementById('medAddBtn').innerHTML='<i class="fa-solid fa-plus"></i>'}
+    else{meds.push({name:n,dose:d,time:t,taken:false});toast('Added!','fa-pills','ts');addDet('info','fa-pills','Medication Added',n+' '+d);updateDetLog()}
+    document.getElementById('medN').value='';document.getElementById('medD').value='';document.getElementById('medT').value='';S('mc_meds_'+CU.id,meds);renderMeds();
+}
+function togTaken(i){meds[i].taken=!meds[i].taken;S('mc_meds_'+CU.id,meds);renderMeds();toast(meds[i].taken?'Marked taken':'Marked not taken',meds[i].taken?'fa-check-circle':'fa-clock',meds[i].taken?'tgu':'ts')}
+function editMed(i){var m=meds[i];document.getElementById('medN').value=m.name;document.getElementById('medD').value=m.dose;document.getElementById('medT').value=m.time;editIdx=i;document.getElementById('medAddBtn').innerHTML='<i class="fa-solid fa-check"></i>';document.getElementById('medN').focus()}
+function delMed(i){confirmF('Delete "'+meds[i].name+'"?',function(){meds.splice(i,1);if(editIdx===i)editIdx=null;S('mc_meds_'+CU.id,meds);renderMeds();toast('Deleted','fa-trash','ts')},'Delete','bd')}
+
+/* ===== APPOINTMENTS ===== */
+function bookAppt(){var sel=document.getElementById('a-doc');if(!sel)return;sel.innerHTML='<option value="">Select</option>'+onDocs().map(function(d){return '<option value="'+d.name+'">'+d.name+' ('+d.specialty+')</option>'}).join('');openM('apptM')}
+
+function submitAppt(e){
+    e.preventDefault();var doc=document.getElementById('a-doc').value,em=document.getElementById('a-email').value,dt=document.getElementById('a-date').value,tm=document.getElementById('a-time').value,rs=document.getElementById('a-reason').value;
+    if(!doc||!em||!dt){toast('Fill required fields','fa-triangle-exclamation','tw');return}if(!vE(em)){toast('Valid email required','fa-circle-xmark','te');return}
+    var appts=getA();appts.push({doc:doc,email:em,date:dt,time:tm,reason:rs,reminded:false,ts:Date.now()});S('mc_appts',appts);closeM('apptM');
+    sendEmail(em,'Appointment Confirmed - '+doc,'Doctor: '+doc+'\nDate: '+dt+'\nTime: '+tm+'\nReason: '+rs);
+    document.getElementById('a-reason').value='';toast('Booked with '+doc+'!','fa-calendar-check','tgu');
+    addDet('good','fa-calendar-check','Appointment Booked',doc+' on '+dt+' at '+tm);updateDetLog();
+}
+
+/* ===== PROFILE ===== */
+function showProf(){
+    var c=document.getElementById('profC'),ini=CU.name.split(' ').map(function(w){return w[0]}).join('').toUpperCase().slice(0,2),ac=CU.role==='doctor'?'da':'pa';
+    var info=[['fa-envelope','Email',CU.email],['fa-clock','Login',CU.loginTime?new Date(CU.loginTime).toLocaleString():'N/A'],['fa-id-badge','ID',CU.id]];
+    if(CU.role==='doctor')info.push(['fa-stethoscope','Specialty',CU.specialty],['fa-user-check','Consultations',CU.cons||0]);
+    else info.push(['fa-calendar','DOB',CU.dob||'Not set']);
+    c.innerHTML='<div style="text-align:center;margin-bottom:1.5rem"><div class="ua '+ac+'" style="width:64px;height:64px;font-size:1.5rem;margin:0 auto .8rem">'+ini+'</div><h3>'+san(CU.name)+'</h3></div>'+info.map(function(i){return '<div style="display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--bd)"><span style="color:var(--mt);font-size:.9rem"><i class="fa-solid '+i[0]+'" style="width:20px"></i> '+i[1]+'</span><span style="font-size:.9rem;font-weight:500">'+san(String(i[2]))+'</span></div>'}).join('')+'<button class="btn bs" style="width:100%;justify-content:center;margin-top:.5rem" id="profEml"><i class="fa-solid fa-envelope"></i> Email Notifications</button>';
+    openM('profM');
+    setTimeout(function(){var eb=document.getElementById('profEml');if(eb)eb.addEventListener('click',showEml)},50);
+}
+
+function showEml(){var logs=G('mc_emails')||[],c=document.getElementById('emlC');if(!logs.length){c.innerHTML='<p style="color:var(--mt);text-align:center;padding:2rem">No emails yet.</p>';openM('emlM');return}c.innerHTML=logs.slice().reverse().map(function(l){return '<div class="eli"><i class="fa-solid fa-check-circle"></i><div><strong style="color:var(--lt);font-size:.85rem">'+san(l.subj||'Notification')+'</strong><p style="font-size:.75rem;color:var(--mt)">To: '+l.to+'</p></div><span class="elt">'+new Date(l.ts).toLocaleString()+'</span></div>'}).join('');openM('emlM')}
+
+/* ===== EDUCATION ===== */
+function openArt(k){var a=ARTS[k];if(!a)return;document.getElementById('artD').innerHTML='<div class="ed">'+a.c+'<div style="margin-top:1rem;display:flex;gap:.5rem"><button class="btn bs bsm" id="artShare"><i class="fa-solid fa-share-nodes"></i> Share</button><button class="btn bs bsm" id="artPrint"><i class="fa-solid fa-print"></i> Print</button></div></div>';document.getElementById('artD').scrollIntoView({behavior:'smooth',block:'nearest'});setTimeout(function(){var sh=document.getElementById('artShare');if(sh)sh.addEventListener('click',function(){navigator.clipboard.writeText(location.href);toast('Link copied!','fa-link','ts')});var pr=document.getElementById('artPrint');if(pr)pr.addEventListener('click',function(){window.print()})},50)}
+
+/* ===== GLOBAL EVENT LISTENERS ===== */
+document.addEventListener('DOMContentLoaded',function(){
+    /* Demo accounts */
+    var ps=getP(),ds=getD();
+    if(!ps.find(function(p){return p.email==='patient@demo.com'})){ps.push({id:'p1',name:'John Doe',email:'patient@demo.com',password:'demo123',dob:'1990-05-15',role:'patient',loginTime:null});S('mc_pat',ps)}
+    if(!ds.find(function(d){return d.email==='doctor@demo.com'})){ds.push({id:'d1',name:'Dr. Sarah Chen',email:'doctor@demo.com',password:'demo123',licenseId:'MED-2024-00847',specialty:'Cardiology',status:'offline',role:'doctor',loginTime:null,cons:0});S('mc_doc',ds)}
+
+    /* Auth tab buttons */
+    document.getElementById('tabP').addEventListener('click',function(){swRole('patient')});
+    document.getElementById('tabD').addEventListener('click',function(){swRole('doctor')});
+
+    /* Auth form links */
+    document.getElementById('lkPR').addEventListener('click',function(){showF('f-pr')});
+    document.getElementById('lkPL').addEventListener('click',function(){showF('f-pl')});
+    document.getElementById('lkDR').addEventListener('click',function(){showF('f-dr')});
+    document.getElementById('lkDL').addEventListener('click',function(){showF('f-dl')});
+
+    /* Auth buttons */
+    document.getElementById('btnLP').addEventListener('click',function(){doLogin('patient')});
+    document.getElementById('btnRP').addEventListener('click',function(){doReg('patient')});
+    document.getElementById('btnLD').addEventListener('click',function(){doLogin('doctor')});
+    document.getElementById('btnRD').addEventListener('click',function(){doReg('doctor')});
+
+    /* Demo fills */
+    document.getElementById('fdP').addEventListener('click',function(){document.getElementById('i-pe').value='patient@demo.com';document.getElementById('i-pp').value='demo123';toast('Demo filled','fa-flask','ts')});
+    document.getElementById('fdD').addEventListener('click',function(){document.getElementById('i-dlid').value='MED-2024-00847';document.getElementById('i-dle').value='doctor@demo.com';document.getElementById('i-dlp').value='demo123';toast('Demo filled','fa-flask','ts')});
+
+    /* Password toggles */
+    document.querySelectorAll('.tpw[data-pw]').forEach(function(btn){btn.addEventListener('click',function(){var id=this.getAttribute('data-pw'),inp=document.getElementById(id);inp.type=inp.type==='password'?'text':'password';this.innerHTML='<i class="fa-solid fa-eye'+(inp.type==='text'?'-slash':'')+'"></i>'})});
+
+    /* Nav */
+    document.getElementById('logoBtn').addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+    document.getElementById('mmbBtn').addEventListener('click',function(){document.getElementById('navL').classList.toggle('op')});
+    document.querySelectorAll('#navL a').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();document.querySelectorAll('#navL a').forEach(function(x){x.classList.remove('on')});this.classList.add('on');document.getElementById('navL').classList.remove('op');var nav=this.getAttribute('data-nav');var targets={dash:null,consult:'consult',health:'health',ai:'aiPanel',outb:'outb'};var tid=targets[nav];if(tid){var el=document.getElementById(tid);if(el)el.scrollIntoView({behavior:'smooth'})}else{window.scrollTo({top:0,behavior:'smooth'})}})});
+
+    /* Profile + Logout */
+    document.getElementById('profBtn').addEventListener('click',showProf);
+    document.getElementById('logoutBtn').addEventListener('click',doLogout);
+
+    /* Modal close buttons */
+    document.querySelectorAll('.mox[data-close]').forEach(function(btn){btn.addEventListener('click',function(){closeM(this.getAttribute('data-close'))})});
+    document.querySelectorAll('.mo').forEach(function(mo){mo.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on')})});
+    document.getElementById('cfCancel').addEventListener('click',function(){closeM('cfM')});
+
+    /* Appointment form */
+    document.getElementById('apptForm').addEventListener('submit',submitAppt);
+
+    /* Bell close */
+    document.getElementById('bellClose').addEventListener('click',function(){document.getElementById('bell').classList.remove('sh')});
+
+    /* Check session */
+    var sess=G('mc_session');if(sess){CU=sess;enterApp()}
+});
+</script>
+</body>
+</html>
